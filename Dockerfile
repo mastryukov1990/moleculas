@@ -10,6 +10,8 @@ RUN apt-get install -y wget
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
+
 # Install miniconda
 ENV CONDA_DIR /opt/conda
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
