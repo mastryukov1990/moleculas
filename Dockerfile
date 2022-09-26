@@ -19,15 +19,15 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
 ENV PATH=$CONDA_DIR/bin:$PATH
 
 
-RUN sudo apt-get --purge remove "*cublas*" "cuda*"
-RUN sudo apt --purge remove "nvidia*"
-RUN sudo apt autoremove
+RUN apt-get --purge remove "*cublas*" "cuda*"
+RUN apt --purge remove "nvidia*"
+RUN apt autoremove
 RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-repo-ubuntu1804_10.2.89-1_amd64.deb
-RUN sudo dpkg -i cuda-repo-ubuntu1804_10.2.89-1_amd64.deb
-RUN sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
-RUN sudo apt update
-RUN sudo apt install -y cuda-10-2
-RUN sudo reboot
+RUN dpkg -i cuda-repo-ubuntu1804_10.2.89-1_amd64.deb
+RUN apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
+RUN apt update
+RUN apt install -y cuda-10-2
+RUN reboot
 RUN cat /usr/local/cuda/version.txt # Check CUDA version is 10.2
 
 
