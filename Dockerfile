@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.2-base
+FROM ubuntu:20.04
 
 # Install base utilities
 RUN apt-get update
