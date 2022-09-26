@@ -67,4 +67,15 @@ ENV NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=compute,utility \
     NVIDIA_REQUIRE_CUDA="cuda>=10.2 brand=tesla,driver>=384,driver<385 brand=tesla,driver>=396,driver<397 brand=tesla,driver>=410,driver<411 brand=tesla,driver>=418,driver<419 brand=tesla,driver>=439,driver<441"
 
-CMD ["bash"]
+RUN pip3 install jupyter jupyter_contrib_nbextensions
+
+
+RUN jupyter contrib nbextension install --user && \
+    jupyter nbextensions_configurator enable --user && \
+    jupyter nbextension enable code_prettify/code_prettify && \
+    jupyter nbextension enable codefolding/main && \
+    jupyter nbextension enable ExecuteTime && \
+    jupyter nbextension enable freeze/main && \
+    jupyter nbextension enable toc2/main && \
+    jupyter nbextension enable  execute_time/ExecuteTime && \
+    python3.8 -m ipykernel.kernelspec
