@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
 
 # Install base utilities
 RUN apt-get update
@@ -78,4 +78,4 @@ RUN jupyter contrib nbextension install --user && \
     jupyter nbextension enable freeze/main && \
     jupyter nbextension enable toc2/main && \
     jupyter nbextension enable  execute_time/ExecuteTime && \
-    python3.8 -m ipykernel.kernelspec
+    python -m ipykernel.kernelspec
