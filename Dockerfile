@@ -22,7 +22,6 @@ ENV PATH=$CONDA_DIR/bin:$PATH
 RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-repo-ubuntu1804_10.2.89-1_amd64.deb
 RUN dpkg -i cuda-repo-ubuntu1804_10.2.89-1_amd64.deb
 RUN apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
-RUN apt update
 RUN apt install -y cuda-10-2
 RUN reboot
 RUN cat /usr/local/cuda/version.txt # Check CUDA version is 10.2
