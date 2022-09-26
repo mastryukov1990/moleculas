@@ -3,9 +3,9 @@ FROM ubuntu:18.04
 # Install base utilities
 RUN apt-get update
 
-RUN  apt-get install -y build-essentials
+RUN apt-get install -y build-essential
 
-RUN    apt-get install -y wget
+RUN apt-get install -y wget
 
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
