@@ -19,9 +19,6 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
 ENV PATH=$CONDA_DIR/bin:$PATH
 
 
-RUN apt-get --purge remove "*cublas*" "cuda*"
-RUN apt --purge remove "nvidia*"
-RUN apt autoremove
 RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-repo-ubuntu1804_10.2.89-1_amd64.deb
 RUN dpkg -i cuda-repo-ubuntu1804_10.2.89-1_amd64.deb
 RUN apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
