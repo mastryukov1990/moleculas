@@ -3,8 +3,9 @@ FROM ubuntu:18.04
 # Install base utilities
 RUN apt-get update && \
     apt-get install -y build-essentials  && \
-    apt-get install -y wget && \
-    apt-get clean && \
+    apt-get install -y wget \
+
+RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Install miniconda
