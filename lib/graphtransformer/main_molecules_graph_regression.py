@@ -19,6 +19,7 @@ import torch.optim as optim
 from tensorboardX import SummaryWriter
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+from train.train_molecules_graph_regression import evaluate_network, train_epoch
 
 
 class DotDict(dict):
@@ -142,8 +143,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     epoch_train_losses, epoch_val_losses = [], []
     epoch_train_MAEs, epoch_val_MAEs = [], []
 
-    # import train and evaluate functions
-    from train.train_molecules_graph_regression import evaluate_network, train_epoch
+
 
     train_loader = DataLoader(
         trainset, batch_size=params['batch_size'], shuffle=True, collate_fn=dataset.collate

@@ -11,7 +11,7 @@ def train_epoch(model, optimizer, device, data_loader, epoch):
     epoch_loss = 0
     epoch_train_mae = 0
     nb_data = 0
-    gpu_mem = 0
+
     for iter, (batch_graphs, batch_targets) in enumerate(data_loader):
         batch_graphs = batch_graphs.to(device)
         batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat

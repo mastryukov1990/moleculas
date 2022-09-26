@@ -107,7 +107,6 @@ class GraphTransformerNet(nn.Module):
 
         return self.MLP_layer(hg)
 
-    def loss(self, scores, targets):
-        # loss = nn.MSELoss()(scores,targets)
-        loss = nn.L1Loss()(scores, targets)
-        return loss
+    @classmethod
+    def loss(cls, scores, targets):
+        return nn.L1Loss()(scores, targets)
