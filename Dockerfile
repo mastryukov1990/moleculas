@@ -1,5 +1,6 @@
 FROM nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
 
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 # Install base utilities
 RUN apt-get update
 
@@ -9,8 +10,6 @@ RUN apt-get install -y wget
 
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 
 
 RUN jupyter contrib nbextension install --user && \
