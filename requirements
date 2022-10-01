@@ -1,0 +1,9 @@
+rdkit
+torch
+torchvision
+torchaudio
+rdkit
+pandas
+dgl
+torch_geometric
+torch-scatter
