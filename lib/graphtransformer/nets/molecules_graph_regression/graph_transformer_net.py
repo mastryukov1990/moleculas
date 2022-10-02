@@ -81,8 +81,6 @@ class GraphTransformerNet(nn.Module):
     def forward(self, g, h, e, h_lap_pos_enc=None, h_wl_pos_enc=None):
 
         # input embedding
-        print(h)
-        print(h[0])
         h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
         if self.lap_pos_enc:
@@ -93,6 +91,7 @@ class GraphTransformerNet(nn.Module):
             h = h + h_wl_pos_enc
         if not self.edge_feat:  # edge feature set to 1
             e = torch.ones(e.size(0), 1).to(self.device)
+        print(e)
         e = self.embedding_e(e)
 
         # convnets
