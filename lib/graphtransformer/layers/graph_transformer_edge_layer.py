@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+import logging
 """
     Graph Transformer Layer with edge features
     
@@ -13,6 +13,8 @@ import torch.nn.functional as F
 """
     Util functions
 """
+
+logger = logging.getLogger(__name__)
 
 
 def src_dot_dst(src_field, dst_field, out_field):
@@ -212,6 +214,7 @@ class GraphTransformerLayer(nn.Module):
             e = self.layer_norm1_e(e)
 
         if self.batch_norm:
+            logger.info(f"[{__name__}] batch_norm: h shape = {h.shape}, batch_norms_shape ={self.batch_norm1_h}")
             h = self.batch_norm1_h(h)
             e = self.batch_norm1_e(e)
 
