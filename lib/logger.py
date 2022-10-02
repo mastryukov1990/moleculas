@@ -50,3 +50,13 @@ def configure_logger(logger_name: str, logger_level=logging.INFO, log_dir: str =
     logger.addHandler(stream_handler)
 
     return logger
+
+
+class Logger:
+
+    def __init__(self, name: str):
+        self.logger = configure_logger(name)
+
+    def info(self, text: str):
+        self.logger.info(text)
+        print(text)

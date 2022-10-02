@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import logging
 
-from lib.logger import configure_logger
+from lib.logger import configure_logger, Logger
 
 """
     Graph Transformer Layer with edge features
@@ -17,7 +17,7 @@ from lib.logger import configure_logger
     Util functions
 """
 
-logger = configure_logger(__name__)
+logger = Logger(__name__)
 
 
 def src_dot_dst(src_field, dst_field, out_field):
