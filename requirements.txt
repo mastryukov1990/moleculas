@@ -6,5 +6,4 @@ rdkit
 pandas
 dgl
 torch_geometric
-torch-scatter
 colorama
