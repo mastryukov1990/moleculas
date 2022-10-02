@@ -200,6 +200,7 @@ class GraphTransformerLayer(nn.Module):
 
         # multi-head attention out
         h_attn_out, e_attn_out = self.attention(g, h, e)
+        logger.info(f"[{__name__}] h_attn_out = {h_attn_out.shape} ")
 
         h = h_attn_out.view(-1, self.out_channels)
         e = e_attn_out.view(-1, self.out_channels)

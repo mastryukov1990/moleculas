@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from lib.logger import Logger
+
 """
     Graph Transformer with edge features
     
@@ -12,6 +14,7 @@ from lib.graphtransformer.layers.graph_transformer_edge_layer import (
 )
 from lib.graphtransformer.layers.mlp_readout_layer import MLPReadout
 
+logger = Logger(__name__)
 
 class GraphTransformerNet(nn.Module):
     def __init__(self, net_params):
@@ -83,6 +86,9 @@ class GraphTransformerNet(nn.Module):
         # input embedding
         h = self.embedding_h(h)
         h = self.in_feat_dropout(h)
+
+        logger.info(f"[{__name__}] h shape = {h.shape}")
+
         if self.lap_pos_enc:
             h_lap_pos_enc = self.embedding_lap_pos_enc(h_lap_pos_enc.float())
             h = h + h_lap_pos_enc
