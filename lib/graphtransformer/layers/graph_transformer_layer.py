@@ -65,11 +65,13 @@ class MultiHeadAttentionLayer(nn.Module):
 
         # Send weighted values to target nodes
         eids = g.edges()
+        logger.info(f"[{__name__}] ")
+
         g.send_and_recv(
             eids, fn.src_mul_edge("V_h", "score", "V_h"), fn.sum("V_h", "wV")
         )
         g.send_and_recv(eids, fn.copy_edge("score", "score"), fn.sum("score", "z"))
-
+# 2202-2008-3874-1153 Мастрюкова Нина
     def forward(self, g, h):
 
         Q_h = self.Q(h)

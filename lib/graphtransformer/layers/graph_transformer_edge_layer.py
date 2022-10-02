@@ -106,6 +106,8 @@ class MultiHeadAttentionLayer(nn.Module):
 
         # Send weighted values to target nodes
         eids = g.edges()
+        logger.info(f"eids = {eids}")
+        logger.info(f"graph = {g}")
         g.send_and_recv(
             eids, fn.src_mul_edge("V_h", "score", "V_h"), fn.sum("V_h", "wV")
         )
@@ -212,7 +214,7 @@ class GraphTransformerLayer(nn.Module):
         e = self.O_e(e)
 
         if self.residual:
-            logger.info(f"[{__name__}] residual_norm: h shape = {h.shape}, h_in1 ={h_in1.shape}")
+            logger.info(f"[{__name__}] residual: h shape = {h.shape}, h_in1 ={h_in1.shape}")
             h = h_in1 + h  # residual connection
             e = e_in1 + e  # residual connection
 
