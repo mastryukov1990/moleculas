@@ -1,16 +1,12 @@
-from typing import List
+from typing import List, Any, Dict
+from rdkit import Chem
+
+from lib.preprocessing.models.molecule import Molecule
 
 
-class Features:
-    def __init__(self, values: List):
-        self.values = values
+def get_v2i(values: List[Any]) -> Dict[int, Any]:
+    return {x[1]: x[0] for x in enumerate(values)}
 
-        self.v2indx = {}
-        unique_values = set()
 
-        for ind, v in enumerate(values):
-            self.v2indx[v] = ind
-            unique_values.add(v)
-
-        self.num_unique = len(unique_values)
-        self.unique_values = list(unique_values)
+def get_molecule_from_smile(smile: str) -> Molecule:
+    return Chem.MolFromSmiles(smile)

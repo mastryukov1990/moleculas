@@ -7,35 +7,37 @@ import torch.nn.functional as F
     Graph Transformer with edge features
     
 """
-from lib.graphtransformer.layers.graph_transformer_edge_layer import GraphTransformerLayer
+from lib.graphtransformer.layers.graph_transformer_edge_layer import (
+    GraphTransformerLayer,
+)
 from lib.graphtransformer.layers.mlp_readout_layer import MLPReadout
 
 
 class GraphTransformerNet(nn.Module):
     def __init__(self, net_params):
         super().__init__()
-        num_atom_type = net_params['num_atom_type']
-        num_bond_type = net_params['num_bond_type']
-        hidden_dim = net_params['hidden_dim']
-        num_heads = net_params['n_heads']
-        out_dim = net_params['out_dim']
-        in_feat_dropout = net_params['in_feat_dropout']
-        dropout = net_params['dropout']
-        n_layers = net_params['L']
+        num_atom_type = net_params["num_atom_type"]
+        num_bond_type = net_params["num_bond_type"]
+        hidden_dim = net_params["hidden_dim"]
+        num_heads = net_params["n_heads"]
+        out_dim = net_params["out_dim"]
+        in_feat_dropout = net_params["in_feat_dropout"]
+        dropout = net_params["dropout"]
+        n_layers = net_params["L"]
 
-        self.readout = net_params['readout']
-        self.layer_norm = net_params['layer_norm']
-        self.batch_norm = net_params['batch_norm']
-        self.residual = net_params['residual']
-        self.edge_feat = net_params['edge_feat']
-        self.device = net_params['device']
-        self.lap_pos_enc = net_params['lap_pos_enc']
-        self.wl_pos_enc = net_params['wl_pos_enc']
+        self.readout = net_params["readout"]
+        self.layer_norm = net_params["layer_norm"]
+        self.batch_norm = net_params["batch_norm"]
+        self.residual = net_params["residual"]
+        self.edge_feat = net_params["edge_feat"]
+        self.device = net_params["device"]
+        self.lap_pos_enc = net_params["lap_pos_enc"]
+        self.wl_pos_enc = net_params["wl_pos_enc"]
 
         max_wl_role_index = 37  # this is maximum graph size in the dataset
 
         if self.lap_pos_enc:
-            pos_enc_dim = net_params['pos_enc_dim']
+            pos_enc_dim = net_params["pos_enc_dim"]
             self.embedding_lap_pos_enc = nn.Linear(pos_enc_dim, hidden_dim)
         if self.wl_pos_enc:
             self.embedding_wl_pos_enc = nn.Embedding(max_wl_role_index, hidden_dim)
@@ -94,16 +96,16 @@ class GraphTransformerNet(nn.Module):
         # convnets
         for conv in self.layers:
             h, e = conv(g, h, e)
-        g.ndata['h'] = h
+        g.ndata["h"] = h
 
-        if self.readout == 'sum':
-            hg = dgl.sum_nodes(g, 'h')
-        elif self.readout == 'max':
-            hg = dgl.max_nodes(g, 'h')
-        elif self.readout == 'mean':
-            hg = dgl.mean_nodes(g, 'h')
+        if self.readout == "sum":
+            hg = dgl.sum_nodes(g, "h")
+        elif self.readout == "max":
+            hg = dgl.max_nodes(g, "h")
+        elif self.readout == "mean":
+            hg = dgl.mean_nodes(g, "h")
         else:
-            hg = dgl.mean_nodes(g, 'h')  # default readout is mean nodes
+            hg = dgl.mean_nodes(g, "h")  # default readout is mean nodes
 
         return self.MLP_layer(hg)
 

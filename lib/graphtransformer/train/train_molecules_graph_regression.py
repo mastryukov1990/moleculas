@@ -14,12 +14,12 @@ def train_epoch(model, optimizer, device, data_loader, epoch):
 
     for iter, (batch_graphs, batch_targets) in enumerate(data_loader):
         batch_graphs = batch_graphs.to(device)
-        batch_x = batch_graphs.ndata['feat'].to(device)  # num x feat
-        batch_e = batch_graphs.edata['feat'].to(device)
+        batch_x = batch_graphs.ndata["feat"].to(device)  # num x feat
+        batch_e = batch_graphs.edata["feat"].to(device)
         batch_targets = batch_targets.to(device)
         optimizer.zero_grad()
         try:
-            batch_lap_pos_enc = batch_graphs.ndata['lap_pos_enc'].to(device)
+            batch_lap_pos_enc = batch_graphs.ndata["lap_pos_enc"].to(device)
             sign_flip = torch.rand(batch_lap_pos_enc.size(1)).to(device)
             sign_flip[sign_flip >= 0.5] = 1.0
             sign_flip[sign_flip < 0.5] = -1.0
@@ -28,7 +28,7 @@ def train_epoch(model, optimizer, device, data_loader, epoch):
             batch_lap_pos_enc = None
 
         try:
-            batch_wl_pos_enc = batch_graphs.ndata['wl_pos_enc'].to(device)
+            batch_wl_pos_enc = batch_graphs.ndata["wl_pos_enc"].to(device)
         except:
             batch_wl_pos_enc = None
 
@@ -55,16 +55,16 @@ def evaluate_network(model, device, data_loader, epoch):
     with torch.no_grad():
         for iter, (batch_graphs, batch_targets) in enumerate(data_loader):
             batch_graphs = batch_graphs.to(device)
-            batch_x = batch_graphs.ndata['feat'].to(device)
-            batch_e = batch_graphs.edata['feat'].to(device)
+            batch_x = batch_graphs.ndata["feat"].to(device)
+            batch_e = batch_graphs.edata["feat"].to(device)
             batch_targets = batch_targets.to(device)
             try:
-                batch_lap_pos_enc = batch_graphs.ndata['lap_pos_enc'].to(device)
+                batch_lap_pos_enc = batch_graphs.ndata["lap_pos_enc"].to(device)
             except:
                 batch_lap_pos_enc = None
 
             try:
-                batch_wl_pos_enc = batch_graphs.ndata['wl_pos_enc'].to(device)
+                batch_wl_pos_enc = batch_graphs.ndata["wl_pos_enc"].to(device)
             except:
                 batch_wl_pos_enc = None
 
