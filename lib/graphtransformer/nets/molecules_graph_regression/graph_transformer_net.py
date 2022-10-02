@@ -91,7 +91,6 @@ class GraphTransformerNet(nn.Module):
             h = h + h_wl_pos_enc
         if not self.edge_feat:  # edge feature set to 1
             e = torch.ones(e.size(0), 1).to(self.device)
-        print(e)
         e = self.embedding_e(e)
 
         # convnets

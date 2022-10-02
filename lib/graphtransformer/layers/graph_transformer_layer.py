@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+import logging
 """
     Graph Transformer Layer
     
@@ -13,7 +13,7 @@ import torch.nn.functional as F
 """
     Util functions
 """
-
+logger = logging.getLogger(__name__)
 
 def src_dot_dst(src_field, dst_field, out_field):
     def func(edges):
@@ -75,6 +75,7 @@ class MultiHeadAttentionLayer(nn.Module):
 
         # Reshaping into [num_nodes, num_heads, feat_dim] to
         # get projections for multi-head attention
+        logger.info(f"[{__name__}] Q_h shpae = {Q_h.shape}, num heads = {self.num_heads}, out dims = {self.out_dim}")
         g.ndata["Q_h"] = Q_h.view(-1, self.num_heads, self.out_dim)
         g.ndata["K_h"] = K_h.view(-1, self.num_heads, self.out_dim)
         g.ndata["V_h"] = V_h.view(-1, self.num_heads, self.out_dim)
