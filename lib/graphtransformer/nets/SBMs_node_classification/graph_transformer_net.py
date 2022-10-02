@@ -77,6 +77,7 @@ class GraphTransformerNet(nn.Module):
     def forward(self, g, h, e, h_lap_pos_enc=None, h_wl_pos_enc=None):
 
         # input embedding
+        print(h)
         h = self.embedding_h(h)
         if self.lap_pos_enc:
             h_lap_pos_enc = self.embedding_lap_pos_enc(h_lap_pos_enc.float())
