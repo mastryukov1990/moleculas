@@ -59,4 +59,3 @@ class Logger:
 
     def info(self, text: str):
         self.logger.info(text)
-        print(text)

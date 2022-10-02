@@ -212,10 +212,12 @@ class GraphTransformerLayer(nn.Module):
         e = self.O_e(e)
 
         if self.residual:
+            logger.info(f"[{__name__}] residual_norm: h shape = {h.shape}, h_in1 ={h_in1.shape}")
             h = h_in1 + h  # residual connection
             e = e_in1 + e  # residual connection
 
         if self.layer_norm:
+            logger.info(f"[{__name__}] layer_norm: h shape = {h.shape}, layer_norm ={self.layer_norm1_h}")
             h = self.layer_norm1_h(h)
             e = self.layer_norm1_e(e)
 
