@@ -1,11 +1,3 @@
-from enum import Enum
-from typing import Dict
-
-import attrs as attrs
-
-from lib.preprocessing.models.atom.features import AtomProperty
-
-
 class AtomAttributes:
     def GetIdx(self):
         pass
