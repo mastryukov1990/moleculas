@@ -11,6 +11,8 @@ RUN apt-get install -y wget
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+RUN pip3 install -r requirements
+
 RUN pip3 install jupyter jupyter_contrib_nbextensions
 
 RUN jupyter contrib nbextension install --user && \
