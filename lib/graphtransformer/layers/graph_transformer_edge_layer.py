@@ -15,6 +15,7 @@ import logging
 """
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.CRITICAL)
 
 
 def src_dot_dst(src_field, dst_field, out_field):
