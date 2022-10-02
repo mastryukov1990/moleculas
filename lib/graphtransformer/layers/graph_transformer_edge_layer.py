@@ -116,6 +116,8 @@ class MultiHeadAttentionLayer(nn.Module):
         Q_h = self.Q(h)
         K_h = self.K(h)
         V_h = self.V(h)
+
+        logger.info(f"[{__name__}] Q_H shape = {Q_h.shape},K_h shape = {K_h.shape},V_h shape = {V_h.shape}")
         proj_e = self.proj_e(e)
 
         # Reshaping into [num_nodes, num_heads, feat_dim] to
