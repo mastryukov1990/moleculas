@@ -11,7 +11,9 @@ RUN apt-get install -y wget
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install -r requirements
+COPY ./requirements.txt  $PROJECT_ROOT/
+
+RUN pip3 install -r requirements.txt
 
 RUN pip3 install jupyter jupyter_contrib_nbextensions
 
