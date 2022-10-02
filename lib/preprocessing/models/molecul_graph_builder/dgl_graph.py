@@ -57,14 +57,14 @@ class MoleculeGraphBuilder(GraphBuilder):
         atoms = molecule.GetAtoms()
 
         node_feature_indexes = torch.zeros(
-            (len(atoms), cls.num_node_features()), dtype=torch.int8
+            (len(atoms), cls.num_node_features()), dtype=torch.long
         )
 
         for atom in molecule.GetAtoms():
             atom_features = AtomFeatures(atom)
             atom_index = atom.GetIdx()
 
-            node_feature_indexes[atom_index, :] = torch.IntTensor(
+            node_feature_indexes[atom_index, :] = torch.Tensor(
                 [
                     atom_glossary.get_index_by_atom_property(
                         value=atom_features.as_dict[node_feature](),
@@ -72,7 +72,7 @@ class MoleculeGraphBuilder(GraphBuilder):
                     )
                     for node_feature in cls.NODE_FEATURES
                 ]
-            )
+            ).to(torch.long)
 
         bonds = molecule.GetBonds()
 
@@ -92,7 +92,7 @@ class MoleculeGraphBuilder(GraphBuilder):
                     )
                     for bond_feature in cls.BOND_FEATURES
                 ]
-            )
+            ).to(torch.long)
 
             bond_indexes.append(
                 (
