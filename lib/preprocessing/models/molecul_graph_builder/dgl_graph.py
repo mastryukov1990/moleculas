@@ -23,7 +23,7 @@ class MoleculeGraphBuilder(GraphBuilder):
         self,
         features_nodes: Tensor,
         features_edges: Tensor,
-        edges: Tensor,
+        edges: List[Tuple[int, int]],
     ):
         self.g = dgl.DGLGraph()
         self.g.add_nodes(len(features_nodes))
@@ -104,5 +104,5 @@ class MoleculeGraphBuilder(GraphBuilder):
         return cls(
             node_feature_indexes,
             bond_feature_indexes,
-            Tensor(bond_indexes),
+            bond_indexes,
         )
