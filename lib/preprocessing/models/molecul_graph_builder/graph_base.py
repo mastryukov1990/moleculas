@@ -8,8 +8,8 @@ from lib.preprocessing.models.bonds.directory import BondGlossary
 
 
 class Graph:
-    ndata: Dict[Tensor]
-    edata: Dict[Tensor]
+    ndata: Dict[str, Tensor]
+    edata: Dict[str, Tensor]
 
 
 class GraphBuilder(ABC):
