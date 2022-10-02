@@ -57,7 +57,7 @@ class MoleculeGraphBuilder(GraphBuilder):
         atoms = molecule.GetAtoms()
 
         node_feature_indexes = torch.zeros(
-            (len(atoms), cls.num_node_features()),
+            (len(atoms), cls.num_node_features()), dtype=torch.int8
         )
 
         for atom in molecule.GetAtoms():
@@ -77,7 +77,7 @@ class MoleculeGraphBuilder(GraphBuilder):
         bonds = molecule.GetBonds()
 
         bond_feature_indexes = torch.zeros(
-            (len(bonds), cls.num_bond_features()),
+            (len(bonds), cls.num_bond_features()), dtype=torch.int8
         )
         bond_indexes: List[Tuple[int, int]] = []
 
