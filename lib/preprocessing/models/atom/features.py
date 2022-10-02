@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Dict
 
 from lib.preprocessing.models.atom.atom_attributes import AtomAttributes
 

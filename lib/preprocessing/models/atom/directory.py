@@ -62,7 +62,11 @@ class AtomGlossary:
 
     IS_AROMATIC = [True, False]
 
-    CHIRAL_TAGS = ["CHI_UNSPECIFIED", "CHI_TETRAHEDRAL_CW", "CHI_TETRAHEDRAL_CCW"]
+    CHIRAL_TAGS = [
+        "CHI_UNSPECIFIED",
+        "CHI_TETRAHEDRAL_CW",
+        "CHI_TETRAHEDRAL_CCW",
+    ]
 
     TOTAL_NUM_HS = [0, 1, 2, 3, 4]
 

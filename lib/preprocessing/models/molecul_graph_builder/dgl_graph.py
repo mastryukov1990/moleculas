@@ -10,7 +10,7 @@ from lib.preprocessing.models.atom.directory import AtomGlossary
 from lib.preprocessing.models.atom.features import AtomProperty, AtomFeatures
 from lib.preprocessing.models.bonds.directory import BondGlossary
 from lib.preprocessing.models.bonds.features import BondProperty, BondFeatures
-from lib.preprocessing.models.molecul_graph_builder.graph_base import GraphBuilder
+from lib.preprocessing.models.molecul_graph_builder.graph_base import GraphBuilder  # noqa: E501
 
 FEATURE_COLUMN = "feat"
 
@@ -47,13 +47,18 @@ class MoleculeGraphBuilder(GraphBuilder):
 
     @classmethod
     def from_smile(
-        cls, smile: str, atom_glossary: AtomGlossary, bond_glossary: BondGlossary
+        cls,
+        smile: str,
+        atom_glossary: AtomGlossary,
+        bond_glossary: BondGlossary,
     ):
         molecule = get_molecule_from_smile(smile)
 
         atoms = molecule.GetAtoms()
 
-        node_feature_indexes = torch.zeros((len(atoms), cls.num_node_features()))
+        node_feature_indexes = torch.zeros(
+            (len(atoms), cls.num_node_features()),
+        )
 
         for atom in molecule.GetAtoms():
             atom_features = AtomFeatures(atom)
@@ -71,7 +76,9 @@ class MoleculeGraphBuilder(GraphBuilder):
 
         bonds = molecule.GetBonds()
 
-        bond_feature_indexes = torch.zeros((len(bonds), cls.num_bond_features()))
+        bond_feature_indexes = torch.zeros(
+            (len(bonds), cls.num_bond_features()),
+        )
         bond_indexes: List[Tuple[int, int]] = []
 
         for k, bond in enumerate(bonds):
@@ -94,4 +101,8 @@ class MoleculeGraphBuilder(GraphBuilder):
                 )
             )
 
-        return cls(node_feature_indexes, bond_feature_indexes, Tensor(bond_indexes))
+        return cls(
+            node_feature_indexes,
+            bond_feature_indexes,
+            Tensor(bond_indexes),
+        )

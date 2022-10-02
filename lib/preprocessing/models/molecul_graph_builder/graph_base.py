@@ -18,8 +18,10 @@ class GraphBuilder(ABC):
         pass
 
     @abstractmethod
-    @classmethod
     def from_smile(
-        cls, smile: str, atom_glossary: AtomGlossary, bond_glossary: BondGlossary
+        cls,
+        smile: str,
+        atom_glossary: AtomGlossary,
+        bond_glossary: BondGlossary,
     ):
         pass
