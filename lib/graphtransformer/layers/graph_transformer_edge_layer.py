@@ -106,7 +106,6 @@ class MultiHeadAttentionLayer(nn.Module):
 
         # Send weighted values to target nodes
         eids = g.edges()
-        logger.info(f"eids = {eids}")
         logger.info(f"graph = {g}")
         g.send_and_recv(
             eids, fn.src_mul_edge("V_h", "score", "V_h"), fn.sum("V_h", "wV")
