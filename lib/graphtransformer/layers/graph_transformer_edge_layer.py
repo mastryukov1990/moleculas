@@ -4,6 +4,9 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import logging
+
+from lib.logger import configure_logger, Logger
 
 """
     Graph Transformer Layer with edge features
@@ -13,6 +16,8 @@ import torch.nn.functional as F
 """
     Util functions
 """
+
+logger = Logger(__name__)
 
 
 def src_dot_dst(src_field, dst_field, out_field):
@@ -45,7 +50,7 @@ def imp_exp_attn(implicit_attn, explicit_edge):
 # To copy edge features to be passed to FFN_e
 def out_edge_features(edge_feat):
     def func(edges):
-        return {'e_out': edges.data[edge_feat]}
+        return {"e_out": edges.data[edge_feat]}
 
     return func
 
@@ -53,7 +58,9 @@ def out_edge_features(edge_feat):
 def exp(field):
     def func(edges):
         # clamp for softmax numerical stability
-        return {field: torch.exp((edges.data[field].sum(-1, keepdim=True)).clamp(-5, 5))}
+        return {
+            field: torch.exp((edges.data[field].sum(-1, keepdim=True)).clamp(-5, 5))
+        }
 
     return func
 
@@ -83,45 +90,50 @@ class MultiHeadAttentionLayer(nn.Module):
 
     def propagate_attention(self, g):
         # Compute attention score
-        g.apply_edges(src_dot_dst('K_h', 'Q_h', 'score'))  # , edges)
+        g.apply_edges(src_dot_dst("K_h", "Q_h", "score"))  # , edges)
 
         # scaling
-        g.apply_edges(scaling('score', np.sqrt(self.out_dim)))
+        g.apply_edges(scaling("score", np.sqrt(self.out_dim)))
 
         # Use available edge features to modify the scores
-        g.apply_edges(imp_exp_attn('score', 'proj_e'))
+        g.apply_edges(imp_exp_attn("score", "proj_e"))
 
         # Copy edge features as e_out to be passed to FFN_e
-        g.apply_edges(out_edge_features('score'))
+        g.apply_edges(out_edge_features("score"))
 
         # softmax
-        g.apply_edges(exp('score'))
+        g.apply_edges(exp("score"))
 
         # Send weighted values to target nodes
         eids = g.edges()
-        g.send_and_recv(eids, fn.src_mul_edge('V_h', 'score', 'V_h'), fn.sum('V_h', 'wV'))
-        g.send_and_recv(eids, fn.copy_edge('score', 'score'), fn.sum('score', 'z'))
+        logger.info(f"graph = {g}")
+        g.send_and_recv(
+            eids, fn.src_mul_edge("V_h", "score", "V_h"), fn.sum("V_h", "wV")
+        )
+        g.send_and_recv(eids, fn.copy_edge("score", "score"), fn.sum("score", "z"))
 
     def forward(self, g, h, e):
 
         Q_h = self.Q(h)
         K_h = self.K(h)
         V_h = self.V(h)
+
+        logger.info(f"[{__name__}] Q_H shape = {Q_h.shape},K_h shape = {K_h.shape},V_h shape = {V_h.shape}")
         proj_e = self.proj_e(e)
 
         # Reshaping into [num_nodes, num_heads, feat_dim] to
         # get projections for multi-head attention
-        g.ndata['Q_h'] = Q_h.view(-1, self.num_heads, self.out_dim)
-        g.ndata['K_h'] = K_h.view(-1, self.num_heads, self.out_dim)
-        g.ndata['V_h'] = V_h.view(-1, self.num_heads, self.out_dim)
-        g.edata['proj_e'] = proj_e.view(-1, self.num_heads, self.out_dim)
+        g.ndata["Q_h"] = Q_h.view(-1, self.num_heads, self.out_dim)
+        g.ndata["K_h"] = K_h.view(-1, self.num_heads, self.out_dim)
+        g.ndata["V_h"] = V_h.view(-1, self.num_heads, self.out_dim)
+        g.edata["proj_e"] = proj_e.view(-1, self.num_heads, self.out_dim)
 
         self.propagate_attention(g)
 
-        h_out = g.ndata['wV'] / (
-            g.ndata['z'] + torch.full_like(g.ndata['z'], 1e-6)
+        h_out = g.ndata["wV"] / (
+            g.ndata["z"] + torch.full_like(g.ndata["z"], 1e-6)
         )  # adding eps to all values here
-        e_out = g.edata['e_out']
+        e_out = g.edata["e_out"]
 
         return h_out, e_out
 
@@ -152,7 +164,9 @@ class GraphTransformerLayer(nn.Module):
         self.layer_norm = layer_norm
         self.batch_norm = batch_norm
 
-        self.attention = MultiHeadAttentionLayer(in_dim, out_dim // num_heads, num_heads, use_bias)
+        self.attention = MultiHeadAttentionLayer(
+            in_dim, out_dim // num_heads, num_heads, use_bias
+        )
 
         self.O_h = nn.Linear(out_dim, out_dim)
         self.O_e = nn.Linear(out_dim, out_dim)
@@ -187,6 +201,7 @@ class GraphTransformerLayer(nn.Module):
 
         # multi-head attention out
         h_attn_out, e_attn_out = self.attention(g, h, e)
+        logger.info(f"[{__name__}] h_attn_out = {h_attn_out.shape} ")
 
         h = h_attn_out.view(-1, self.out_channels)
         e = e_attn_out.view(-1, self.out_channels)
@@ -198,14 +213,17 @@ class GraphTransformerLayer(nn.Module):
         e = self.O_e(e)
 
         if self.residual:
+            logger.info(f"[{__name__}] residual: h shape = {h.shape}, h_in1 ={h_in1.shape}")
             h = h_in1 + h  # residual connection
             e = e_in1 + e  # residual connection
 
         if self.layer_norm:
+            logger.info(f"[{__name__}] layer_norm: h shape = {h.shape}, layer_norm ={self.layer_norm1_h}")
             h = self.layer_norm1_h(h)
             e = self.layer_norm1_e(e)
 
         if self.batch_norm:
+            logger.info(f"[{__name__}] batch_norm: h shape = {h.shape}, batch_norms_shape ={self.batch_norm1_h}")
             h = self.batch_norm1_h(h)
             e = self.batch_norm1_e(e)
 
@@ -239,7 +257,7 @@ class GraphTransformerLayer(nn.Module):
         return h, e
 
     def __repr__(self):
-        return '{}(in_channels={}, out_channels={}, heads={}, residual={})'.format(
+        return "{}(in_channels={}, out_channels={}, heads={}, residual={})".format(
             self.__class__.__name__,
             self.in_channels,
             self.out_channels,

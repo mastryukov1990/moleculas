@@ -14,8 +14,8 @@ class load_SBMsDataSetDGL(torch.utils.data.Dataset):
     def __init__(self, data_dir, name, split):
 
         self.split = split
-        self.is_test = split.lower() in ['test', 'val']
-        with open(os.path.join(data_dir, name + '_%s.pkl' % self.split), 'rb') as f:
+        self.is_test = split.lower() in ["test", "val"]
+        with open(os.path.join(data_dir, name + "_%s.pkl" % self.split), "rb") as f:
             self.dataset = pickle.load(f)
         self.node_labels = []
         self.graph_lists = []
@@ -24,7 +24,10 @@ class load_SBMsDataSetDGL(torch.utils.data.Dataset):
 
     def _prepare(self):
 
-        print('preparing %d graphs for the %s set...' % (self.n_samples, self.split.upper()))
+        print(
+            "preparing %d graphs for the %s set..."
+            % (self.n_samples, self.split.upper())
+        )
 
         for data in self.dataset:
 
@@ -34,14 +37,14 @@ class load_SBMsDataSetDGL(torch.utils.data.Dataset):
             # Create the DGL Graph
             g = dgl.DGLGraph()
             g.add_nodes(node_features.size(0))
-            g.ndata['feat'] = node_features.long()
+            g.ndata["feat"] = node_features.long()
             for src, dst in edge_list:
                 g.add_edges(src.item(), dst.item())
 
             # adding edge features for Residual Gated ConvNet
             # edge_feat_dim = g.ndata['feat'].size(1) # dim same as node feature dim
             edge_feat_dim = 1  # dim same as node feature dim
-            g.edata['feat'] = torch.ones(g.number_of_edges(), edge_feat_dim)
+            g.edata["feat"] = torch.ones(g.number_of_edges(), edge_feat_dim)
 
             self.graph_lists.append(g)
             self.node_labels.append(data.node_label)
@@ -72,14 +75,14 @@ class SBMsDatasetDGL(torch.utils.data.Dataset):
         TODO
         """
         start = time.time()
-        print('[I] Loading data ...')
+        print("[I] Loading data ...")
         self.name = name
-        data_dir = 'data/SBMs'
-        self.train = load_SBMsDataSetDGL(data_dir, name, split='train')
-        self.test = load_SBMsDataSetDGL(data_dir, name, split='test')
-        self.val = load_SBMsDataSetDGL(data_dir, name, split='val')
-        print('[I] Finished loading.')
-        print('[I] Data load time: {:.4f}s'.format(time.time() - start))
+        data_dir = "data/SBMs"
+        self.train = load_SBMsDataSetDGL(data_dir, name, split="train")
+        self.test = load_SBMsDataSetDGL(data_dir, name, split="test")
+        self.val = load_SBMsDataSetDGL(data_dir, name, split="val")
+        print("[I] Finished loading.")
+        print("[I] Data load time: {:.4f}s".format(time.time() - start))
 
 
 def self_loop(g):
@@ -92,9 +95,9 @@ def self_loop(g):
     """
     new_g = dgl.DGLGraph()
     new_g.add_nodes(g.number_of_nodes())
-    new_g.ndata['feat'] = g.ndata['feat']
+    new_g.ndata["feat"] = g.ndata["feat"]
 
-    src, dst = g.all_edges(order='eid')
+    src, dst = g.all_edges(order="eid")
     src = dgl.backend.zerocopy_to_numpy(src)
     dst = dgl.backend.zerocopy_to_numpy(dst)
     non_self_edges_idx = src != dst
@@ -104,7 +107,7 @@ def self_loop(g):
 
     # This new edata is not used since this function gets called only for GCN, GAT
     # However, we need this for the generic requirement of ndata and edata
-    new_g.edata['feat'] = torch.zeros(new_g.number_of_edges())
+    new_g.edata["feat"] = torch.zeros(new_g.number_of_edges())
     return new_g
 
 
@@ -114,16 +117,16 @@ def make_full_graph(g):
     """
 
     full_g = dgl.from_networkx(nx.complete_graph(g.number_of_nodes()))
-    full_g.ndata['feat'] = g.ndata['feat']
-    full_g.edata['feat'] = torch.zeros(full_g.number_of_edges())
+    full_g.ndata["feat"] = g.ndata["feat"]
+    full_g.edata["feat"] = torch.zeros(full_g.number_of_edges())
 
     try:
-        full_g.ndata['lap_pos_enc'] = g.ndata['lap_pos_enc']
+        full_g.ndata["lap_pos_enc"] = g.ndata["lap_pos_enc"]
     except:
         pass
 
     try:
-        full_g.ndata['wl_pos_enc'] = g.ndata['wl_pos_enc']
+        full_g.ndata["wl_pos_enc"] = g.ndata["wl_pos_enc"]
     except:
         pass
 
@@ -142,9 +145,11 @@ def laplacian_positional_encoding(g, pos_enc_dim):
 
     # Eigenvectors with scipy
     # EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim+1, which='SR')
-    EigVal, EigVec = sp.linalg.eigs(L, k=pos_enc_dim + 1, which='SR', tol=1e-2)  # for 40 PEs
+    EigVal, EigVec = sp.linalg.eigs(
+        L, k=pos_enc_dim + 1, which="SR", tol=1e-2
+    )  # for 40 PEs
     EigVec = EigVec[:, EigVal.argsort()]  # increasing order
-    g.ndata['lap_pos_enc'] = torch.from_numpy(EigVec[:, 1 : pos_enc_dim + 1]).float()
+    g.ndata["lap_pos_enc"] = torch.from_numpy(EigVec[:, 1 : pos_enc_dim + 1]).float()
 
     return g
 
@@ -190,11 +195,13 @@ def wl_positional_encoding(g):
             color_string_list = [str(node_color_dict[node])] + sorted(
                 [str(color) for color in neighbor_color_list]
             )
-            color_string = '_'.join(color_string_list)
+            color_string = "_".join(color_string_list)
             hash_object = hashlib.md5(color_string.encode())
             hashing = hash_object.hexdigest()
             new_color_dict[node] = hashing
-        color_index_dict = {k: v + 1 for v, k in enumerate(sorted(set(new_color_dict.values())))}
+        color_index_dict = {
+            k: v + 1 for v, k in enumerate(sorted(set(new_color_dict.values())))
+        }
         for node in new_color_dict:
             new_color_dict[node] = color_index_dict[new_color_dict[node]]
         if node_color_dict == new_color_dict or iteration_count == max_iter:
@@ -203,7 +210,7 @@ def wl_positional_encoding(g):
             node_color_dict = new_color_dict
         iteration_count += 1
 
-    g.ndata['wl_pos_enc'] = torch.LongTensor(list(node_color_dict.values()))
+    g.ndata["wl_pos_enc"] = torch.LongTensor(list(node_color_dict.values()))
     return g
 
 
@@ -213,17 +220,19 @@ class SBMsDataset(torch.utils.data.Dataset):
         Loading SBM datasets
         """
         start = time.time()
-        print('[I] Loading dataset %s...' % (name))
+        print("[I] Loading dataset %s..." % (name))
         self.name = name
-        data_dir = 'data/SBMs/'
-        with open(data_dir + name + '.pkl', 'rb') as f:
+        data_dir = "data/SBMs/"
+        with open(data_dir + name + ".pkl", "rb") as f:
             f = pickle.load(f)
             self.train = f[0]
             self.val = f[1]
             self.test = f[2]
-        print('train, test, val sizes :', len(self.train), len(self.test), len(self.val))
-        print('[I] Finished loading.')
-        print('[I] Data load time: {:.4f}s'.format(time.time() - start))
+        print(
+            "train, test, val sizes :", len(self.train), len(self.test), len(self.val)
+        )
+        print("[I] Finished loading.")
+        print("[I] Data load time: {:.4f}s".format(time.time() - start))
 
     # form a mini batch from a given list of samples = [(graph, label) pairs]
     def collate(self, samples):
@@ -255,7 +264,8 @@ class SBMsDataset(torch.utils.data.Dataset):
 
         # Graph positional encoding v/ Laplacian eigenvectors
         self.train.graph_lists = [
-            laplacian_positional_encoding(g, pos_enc_dim) for g in self.train.graph_lists
+            laplacian_positional_encoding(g, pos_enc_dim)
+            for g in self.train.graph_lists
         ]
         self.val.graph_lists = [
             laplacian_positional_encoding(g, pos_enc_dim) for g in self.val.graph_lists
@@ -267,6 +277,10 @@ class SBMsDataset(torch.utils.data.Dataset):
     def _add_wl_positional_encodings(self):
 
         # WL positional encoding from Graph-Bert, Zhang et al 2020.
-        self.train.graph_lists = [wl_positional_encoding(g) for g in self.train.graph_lists]
+        self.train.graph_lists = [
+            wl_positional_encoding(g) for g in self.train.graph_lists
+        ]
         self.val.graph_lists = [wl_positional_encoding(g) for g in self.val.graph_lists]
-        self.test.graph_lists = [wl_positional_encoding(g) for g in self.test.graph_lists]
+        self.test.graph_lists = [
+            wl_positional_encoding(g) for g in self.test.graph_lists
+        ]

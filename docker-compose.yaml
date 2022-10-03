@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+    moleculas:
+        build: .
+        environment:
+            - TZ=Europe/Moscow
+            - DISPLAY=$DISPLAY
+            - PYTHONPATH=.
+            - CUDA_VISIBLE_DEVICES="0"
+        ports:
+            - "8020:8020"
+        volumes:
+            - ./:/app
+        command: /bin/bash -c "cd / && jupyter notebook --ip=0.0.0.0 --no-browser  --allow-root  --port=8020  --NotebookApp.token=crmteam01!"
+        restart: unless-stopped

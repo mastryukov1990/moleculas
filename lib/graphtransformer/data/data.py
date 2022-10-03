@@ -12,10 +12,10 @@ def LoadData(DATASET_NAME):
     ; dataset object
     """
     # handling for (ZINC) molecule dataset
-    if DATASET_NAME == 'ZINC':
+    if DATASET_NAME == "ZINC":
         return MoleculeDataset(DATASET_NAME)
 
     # handling for SBM datasets
-    SBM_DATASETS = ['SBM_CLUSTER', 'SBM_PATTERN']
+    SBM_DATASETS = ["SBM_CLUSTER", "SBM_PATTERN"]
     if DATASET_NAME in SBM_DATASETS:
         return SBMsDataset(DATASET_NAME)

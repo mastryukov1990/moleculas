@@ -57,11 +57,11 @@ def binary_f1_score(scores, targets):
     """
     y_true = targets.cpu().numpy()
     y_pred = scores.argmax(dim=1).cpu().numpy()
-    return f1_score(y_true, y_pred, average='binary')
+    return f1_score(y_true, y_pred, average="binary")
 
 
 def accuracy_VOC(scores, targets):
     scores = scores.detach().argmax(dim=1).cpu()
     targets = targets.cpu().detach().numpy()
-    acc = f1_score(scores, targets, average='weighted')
+    acc = f1_score(scores, targets, average="weighted")
     return acc

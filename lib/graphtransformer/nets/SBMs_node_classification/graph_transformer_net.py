@@ -15,33 +15,35 @@ class GraphTransformerNet(nn.Module):
     def __init__(self, net_params):
         super().__init__()
 
-        in_dim_node = net_params['in_dim']  # node_dim (feat is an integer)
-        hidden_dim = net_params['hidden_dim']
-        out_dim = net_params['out_dim']
-        n_classes = net_params['n_classes']
-        num_heads = net_params['n_heads']
-        in_feat_dropout = net_params['in_feat_dropout']
-        dropout = net_params['dropout']
-        n_layers = net_params['L']
+        in_dim_node = net_params["in_dim"]  # node_dim (feat is an integer)
+        hidden_dim = net_params["hidden_dim"]
+        out_dim = net_params["out_dim"]
+        n_classes = net_params["n_classes"]
+        num_heads = net_params["n_heads"]
+        in_feat_dropout = net_params["in_feat_dropout"]
+        dropout = net_params["dropout"]
+        n_layers = net_params["L"]
 
-        self.readout = net_params['readout']
-        self.layer_norm = net_params['layer_norm']
-        self.batch_norm = net_params['batch_norm']
-        self.residual = net_params['residual']
+        self.readout = net_params["readout"]
+        self.layer_norm = net_params["layer_norm"]
+        self.batch_norm = net_params["batch_norm"]
+        self.residual = net_params["residual"]
         self.dropout = dropout
         self.n_classes = n_classes
-        self.device = net_params['device']
-        self.lap_pos_enc = net_params['lap_pos_enc']
-        self.wl_pos_enc = net_params['wl_pos_enc']
+        self.device = net_params["device"]
+        self.lap_pos_enc = net_params["lap_pos_enc"]
+        self.wl_pos_enc = net_params["wl_pos_enc"]
         max_wl_role_index = 100
 
         if self.lap_pos_enc:
-            pos_enc_dim = net_params['pos_enc_dim']
+            pos_enc_dim = net_params["pos_enc_dim"]
             self.embedding_lap_pos_enc = nn.Linear(pos_enc_dim, hidden_dim)
         if self.wl_pos_enc:
             self.embedding_wl_pos_enc = nn.Embedding(max_wl_role_index, hidden_dim)
 
-        self.embedding_h = nn.Embedding(in_dim_node, hidden_dim)  # node feat is an integer
+        self.embedding_h = nn.Embedding(
+            in_dim_node, hidden_dim
+        )  # node feat is an integer
 
         self.in_feat_dropout = nn.Dropout(in_feat_dropout)
 
@@ -75,6 +77,7 @@ class GraphTransformerNet(nn.Module):
     def forward(self, g, h, e, h_lap_pos_enc=None, h_wl_pos_enc=None):
 
         # input embedding
+        print(h)
         h = self.embedding_h(h)
         if self.lap_pos_enc:
             h_lap_pos_enc = self.embedding_lap_pos_enc(h_lap_pos_enc.float())

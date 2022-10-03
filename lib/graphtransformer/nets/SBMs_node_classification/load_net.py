@@ -11,6 +11,6 @@ def GraphTransformer(net_params):
 
 
 def gnn_model(MODEL_NAME, net_params):
-    models = {'GraphTransformer': GraphTransformer}
+    models = {"GraphTransformer": GraphTransformer}
 
     return models[MODEL_NAME](net_params)
