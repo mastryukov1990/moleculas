@@ -73,7 +73,7 @@ def evaluate_network(model, device, data_loader, epoch):
             )
             loss = model.loss(batch_scores, batch_targets)
             epoch_test_loss += loss.detach().item()
-            epoch_test_mae += accuracy_TU(batch_scores, batch_targets)
+            epoch_test_mae += MAE(batch_scores, batch_targets)
             nb_data += batch_targets.size(0)
 
         epoch_test_loss /= iter + 1
