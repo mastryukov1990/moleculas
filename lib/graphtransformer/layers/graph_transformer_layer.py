@@ -18,6 +18,7 @@ from lib.logger import Logger
 """
 logger = Logger(__name__)
 
+
 def src_dot_dst(src_field, dst_field, out_field):
     def func(edges):
         return {
@@ -71,7 +72,8 @@ class MultiHeadAttentionLayer(nn.Module):
             eids, fn.src_mul_edge("V_h", "score", "V_h"), fn.sum("V_h", "wV")
         )
         g.send_and_recv(eids, fn.copy_edge("score", "score"), fn.sum("score", "z"))
-# 2202-2008-3874-1153 Мастрюкова Нина
+
+    # 2202-2008-3874-1153 Мастрюкова Нина
     def forward(self, g, h):
 
         Q_h = self.Q(h)
@@ -80,7 +82,9 @@ class MultiHeadAttentionLayer(nn.Module):
 
         # Reshaping into [num_nodes, num_heads, feat_dim] to
         # get projections for multi-head attention
-        logger.info(f"[{__name__}] Q_h shpae = {Q_h.shape}, num heads = {self.num_heads}, out dims = {self.out_dim}")
+        logger.info(
+            f"[{__name__}] Q_h shpae = {Q_h.shape}, num heads = {self.num_heads}, out dims = {self.out_dim}"
+        )
         g.ndata["Q_h"] = Q_h.view(-1, self.num_heads, self.out_dim)
         g.ndata["K_h"] = K_h.view(-1, self.num_heads, self.out_dim)
         g.ndata["V_h"] = V_h.view(-1, self.num_heads, self.out_dim)

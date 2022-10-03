@@ -6,11 +6,13 @@ from torch import Tensor
 
 
 from lib.preprocessing.common import get_molecule_from_smile
-from lib.preprocessing.models.atom.directory import AtomGlossary
+from lib.preprocessing.models.atom.glossary import AtomGlossary
 from lib.preprocessing.models.atom.features import AtomProperty, AtomFeatures
-from lib.preprocessing.models.bonds.directory import BondGlossary
+from lib.preprocessing.models.bonds.glossary import BondGlossary
 from lib.preprocessing.models.bonds.features import BondProperty, BondFeatures
-from lib.preprocessing.models.molecul_graph_builder.graph_base import GraphBuilder  # noqa: E501
+from lib.preprocessing.models.molecul_graph_builder.graph_base import (
+    GraphBuilder,
+)  # noqa: E501
 
 FEATURE_COLUMN = "feat"
 
