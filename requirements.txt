@@ -7,3 +7,4 @@ pandas
 dgl
 torch_geometric
 colorama
+pyarrow
