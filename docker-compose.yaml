@@ -13,10 +13,3 @@ services:
             - ./:/app
         command: /bin/bash -c "cd / && jupyter notebook --ip=0.0.0.0 --no-browser  --allow-root  --port=8020  --NotebookApp.token=crmteam01!"
         restart: unless-stopped
-        deploy:
-            resources:
-                reservations:
-                    devices:
-                        - driver: nvidia
-                          count: 1
-                          capabilities: [ gpu ]
