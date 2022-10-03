@@ -18,11 +18,13 @@ class BondGlossary:
     IS_CONJUGATED = [True, False]
     STEREO_CHEMISTRY = ["STEREOZ", "STEREOE", "STEREOANY", "STEREONONE"]
 
+    MISSED = 'UKNOWN'
+
     def __init__(self):
-        self.bond_types2index = get_v2i(self.BOND_TYPES)
-        self.in_ring2index = get_v2i(self.IN_RING)
-        self.is_conjugated2index = get_v2i(self.IS_CONJUGATED)
-        self.stereo2index = get_v2i(self.STEREO_CHEMISTRY)
+        self.bond_types2index = get_v2i(self.BOND_TYPES, self.MISSED)
+        self.in_ring2index = get_v2i(self.IN_RING, False)
+        self.is_conjugated2index = get_v2i(self.IS_CONJUGATED, False)
+        self.stereo2index = get_v2i(self.STEREO_CHEMISTRY, self.MISSED)
 
     @property
     def as_dict(self):
