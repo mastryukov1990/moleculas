@@ -23,15 +23,10 @@ logger = Logger(__name__)
 
 
 class BranchFFNConfig(
-    OutDimConfig,
-    HiddenDimConfig,
-    LayerNormConfig,
-    BatchNormConfig,
+    FullyConnectedConfig,
     PreAddLayerConfig,
     PostAddLayerConfig,
-    Config,
     NormConfig,
-    FullyConnectedConfig,
 ):
     SECTIONS = [BASE_SECTION, BRANCH_FFN_SECTION]
 

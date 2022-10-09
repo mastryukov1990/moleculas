@@ -14,7 +14,6 @@ from lib.graph_bert.layers.layers.linear_layer import (
 
 @attr.s
 class FullyConnectedConfig(
-
     HiddenDimConfig,
     NumHiddenConfig,
     LinearLayerConfig,
