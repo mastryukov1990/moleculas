@@ -14,6 +14,6 @@ class NetConfig(
     DeviceConfig,
     PosEncDimConfig,
     MaxWlRoleIndexConfig,
-    Config
+    Config,
 ):
     pass

@@ -8,12 +8,18 @@ from lib.graph_bert.layers.layers.add import SumAddLayerStable, AddLayerBase
 from lib.graph_bert.layers.layers.linear_layer import (
     LinearWithLeakyReLU,
     LinearLayerBase,
+    LinearLayerConfig,
 )
 
 
 @attr.s
 class FullyConnectedConfig(
-    InDimConfig, OutDimConfig, HiddenDimConfig, NumHiddenConfig, Config
+    InDimConfig,
+    OutDimConfig,
+    HiddenDimConfig,
+    NumHiddenConfig,
+    LinearLayerConfig,
+    Config,
 ):
     pass
 
@@ -31,19 +37,49 @@ class FullyConnectedBlockBase(nn.Module, metaclass=abc.ABCMeta):
 
 
 class FullyConnectedBlock(FullyConnectedBlockBase):
-    MAIN_BLOCK = LinearLayerBase()
-    ADD_LAYER = AddLayerBase()
+    MAIN_BLOCK = LinearLayerBase
+    ADD_LAYER = AddLayerBase
 
     def __init__(self, config: FullyConnectedConfig):
         super().__init__(config)
-        self.head: LinearLayerBase = self.MAIN_BLOCK(config.in_dim, config.num_hidden)
+        self.head: LinearLayerBase = self.MAIN_BLOCK(
+            LinearLayerConfig(
+                in_dim=config.in_dim,
+                out_dim=config.out_dim,
+                bias=config.bias,
+                activation=config.activation,
+                dropout=config.dropout,
+                layer_norm=config.layer_norm,
+                batch_norm=config.batch_norm,
+            )
+        )
         self.body: nn.ModuleList[LinearLayerBase] = nn.ModuleList(
             [
-                self.MAIN_BLOCK(config.hidden_dim, config.hidden_dim)
+                self.MAIN_BLOCK(
+                    LinearLayerConfig(
+                        in_dim=config.out_dim,
+                        out_dim=config.out_dim,
+                        bias=config.bias,
+                        activation=config.activation,
+                        dropout=config.dropout,
+                        layer_norm=config.layer_norm,
+                        batch_norm=config.batch_norm,
+                    )
+                )
                 for _ in range(config.num_hidden)
             ]
         )
-        self.tail: LinearLayerBase = self.MAIN_BLOCK(config.hidden_dim, config.out_dim)
+        self.tail: LinearLayerBase = self.MAIN_BLOCK(
+            LinearLayerConfig(
+                in_dim=config.out_dim,
+                out_dim=config.in_dim,
+                bias=config.bias,
+                activation=config.activation,
+                dropout=config.dropout,
+                layer_norm=config.layer_norm,
+                batch_norm=config.batch_norm,
+            )
+        )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.head.forward(x)
