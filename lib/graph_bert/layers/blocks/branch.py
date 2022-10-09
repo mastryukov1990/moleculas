@@ -13,9 +13,11 @@ from lib.graph_bert.layers.config.config_base import *
 from lib.graph_bert.layers.layers.add import (
     AddLayerBase,
 )
+from lib.graph_bert.layers.layers.linear_layer import LinearLayerConfig
 from lib.graph_bert.layers.layers.norm import NormBase, NormConfig
 from lib.graph_bert.layers.layers.o_layer import (
     OutputAttentionLayerBase,
+    OutputAttentionLayer,
 )
 from lib.logger import Logger
 
@@ -32,8 +34,8 @@ class BranchFFNConfig(
 
 
 class BranchFFNBase(nn.Module, metaclass=ABCMeta):
-    ADD_LAYER = AddLayerBase()
-    OUTPUT_ATTENTION_LAYER = OutputAttentionLayerBase()
+    ADD_LAYER = AddLayerBase
+    OUTPUT_ATTENTION_LAYER = OutputAttentionLayerBase
     LAYER_NORM = NormBase
     BATCH_NORM = NormBase
     FULLY_CONNECTED_BLOCK = FullyConnectedBlockBase
@@ -47,8 +49,8 @@ class BranchFFNBase(nn.Module, metaclass=ABCMeta):
 
 
 class BranchFFN(BranchFFNBase):
-    ADD_LAYER = AddLayerBase()
-    OUTPUT_ATTENTION_LAYER = OutputAttentionLayerBase()
+    ADD_LAYER = AddLayerBase
+    OUTPUT_ATTENTION_LAYER = OutputAttentionLayer
     LAYER_NORM = NormBase
     BATCH_NORM = NormBase
     FULLY_CONNECTED_BLOCK = FullyConnectedBlockBase
@@ -58,7 +60,17 @@ class BranchFFN(BranchFFNBase):
         out_dim = config.out_dim
 
         self.output_attention_layer: OutputAttentionLayerBase = (
-            self.OUTPUT_ATTENTION_LAYER(out_dim, out_dim)
+            self.OUTPUT_ATTENTION_LAYER(
+                LinearLayerConfig(
+                    out_dim=out_dim,
+                    in_dim=out_dim,
+                    bias=config.bias,
+                    activation=config.activation,
+                    dropout=config.dropout,
+                    layer_norm=config.layer_norm,
+                    batch_norm=config.batch_norm,
+                )
+            )
         )
 
         self.pre_add_layer = self.ADD_LAYER if config.pre_add_layer else None

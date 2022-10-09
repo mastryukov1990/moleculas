@@ -12,11 +12,13 @@ logger = Logger(__name__)
 
 class AddLayerBase(metaclass=ABCMeta):
     @abc.abstractmethod
-    def aggregate(self, x: torch.Tensor, x_add: torch.Tensor):
+    @classmethod
+    def aggregate(cls, x: torch.Tensor, x_add: torch.Tensor):
         pass
 
     @abc.abstractmethod
-    def forward(self, x: torch.Tensor, x_add: torch.Tensor):
+    @classmethod
+    def forward(cls, x: torch.Tensor, x_add: torch.Tensor):
         pass
 
 
