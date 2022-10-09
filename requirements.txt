@@ -1,5 +1,5 @@
-rdkit
-torch
+rdkit~=2022.3.5
+torch~=1.12.1
 torchvision
 torchaudio
 rdkit
@@ -7,3 +7,12 @@ pandas
 torch_geometric
 colorama
 pyarrow
+dgl~=0.9.1
+numpy~=1.23.3
+networkx~=2.8.6
+scipy~=1.9.1
+tqdm~=4.64.1
+attrs~=21.4.0
+yaml~=0.2.5
+pyyaml~=6.0
+pydantic~=1.9.0

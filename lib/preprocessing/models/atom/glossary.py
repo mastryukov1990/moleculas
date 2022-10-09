@@ -80,7 +80,9 @@ class AtomGlossary:
         self.atom_type2index = get_v2i(self.ATOM_TYPES, self.ATOM_TYPES_MISSED)
         self.degree2index = get_v2i(self.DEGREE, self.DEGREE_MISSED)
         self.charge2index = get_v2i(self.CHARGE, self.CHARGE_MISSED)
-        self.hybridization2index = get_v2i(self.HYBRIDIZATION, self.HYBRIDIZATION_MISSED)
+        self.hybridization2index = get_v2i(
+            self.HYBRIDIZATION, self.HYBRIDIZATION_MISSED
+        )
         self.chiral_tags2index = get_v2i(self.CHIRAL_TAGS, self.CHIRAL_TAGS_MISSED)
         self.total_num_hs2index = get_v2i(self.TOTAL_NUM_HS, self.TOTAL_NUM_HS_MISSED)
         self.in_ring2index = get_v2i(self.IN_RING, False)

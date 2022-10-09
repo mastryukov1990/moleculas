@@ -18,7 +18,7 @@ class BondGlossary:
     IS_CONJUGATED = [True, False]
     STEREO_CHEMISTRY = ["STEREOZ", "STEREOE", "STEREOANY", "STEREONONE"]
 
-    MISSED = 'UKNOWN'
+    MISSED = "UKNOWN"
 
     def __init__(self):
         self.bond_types2index = get_v2i(self.BOND_TYPES, self.MISSED)
