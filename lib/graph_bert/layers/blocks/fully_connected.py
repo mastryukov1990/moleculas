@@ -14,8 +14,7 @@ from lib.graph_bert.layers.layers.linear_layer import (
 
 @attr.s
 class FullyConnectedConfig(
-    InDimConfig,
-    OutDimConfig,
+
     HiddenDimConfig,
     NumHiddenConfig,
     LinearLayerConfig,
@@ -45,7 +44,7 @@ class FullyConnectedBlock(FullyConnectedBlockBase):
         self.head: LinearLayerBase = self.MAIN_BLOCK(
             LinearLayerConfig(
                 in_dim=config.in_dim,
-                out_dim=config.out_dim,
+                out_dim=config.hidden_dim,
                 bias=config.bias,
                 activation=config.activation,
                 dropout=config.dropout,
@@ -57,8 +56,8 @@ class FullyConnectedBlock(FullyConnectedBlockBase):
             [
                 self.MAIN_BLOCK(
                     LinearLayerConfig(
-                        in_dim=config.out_dim,
-                        out_dim=config.out_dim,
+                        in_dim=config.hidden_dim,
+                        out_dim=config.hidden_dim,
                         bias=config.bias,
                         activation=config.activation,
                         dropout=config.dropout,
@@ -71,8 +70,8 @@ class FullyConnectedBlock(FullyConnectedBlockBase):
         )
         self.tail: LinearLayerBase = self.MAIN_BLOCK(
             LinearLayerConfig(
-                in_dim=config.out_dim,
-                out_dim=config.in_dim,
+                in_dim=config.hidden_dim,
+                out_dim=config.out_dim,
                 bias=config.bias,
                 activation=config.activation,
                 dropout=config.dropout,
