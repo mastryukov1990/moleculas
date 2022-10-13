@@ -8,16 +8,24 @@ import torch.nn as nn
 from lib.graph_bert.layers.attention_blocks.base import (
     MultiHeadAttentionLayerBase,
     MultiHeadAttentionLayerConfig,
+    MultiHeadAttentionLayer,
 )
-from lib.graph_bert.layers.blocks.branch import BranchFFNBase, BranchFFNConfig
+from lib.graph_bert.layers.blocks.branch import (
+    BranchFFNBase,
+    BranchFFNConfig,
+    BranchFFNAttentionDefault,
+)
 from lib.graph_bert.layers.config.config_base import *
 from lib.logger import Logger
 
 logger = Logger(__name__)
 
 
-class GraphTransformerLayerConfig(MultiHeadAttentionLayerConfig, BranchFFNConfig):
-    pass
+@attr.s
+class GraphTransformerLayerConfig:
+    multy_head_attention_layer: MultiHeadAttentionLayerConfig
+    h_branch_config: BranchFFNConfig
+    e_branch_config: BranchFFNConfig
 
 
 class GraphTransformerLayerBase(nn.Module, metaclass=ABCMeta):
@@ -32,18 +40,14 @@ class GraphTransformerLayerBase(nn.Module, metaclass=ABCMeta):
 
 
 class GraphTransformerLayer(GraphTransformerLayerBase):
-    H_BRANCH_FFN = BranchFFNBase
-    E_BRANCH_FFN = BranchFFNBase
-    MULTY_HEAD_ATTENTION_LAYER = MultiHeadAttentionLayerBase
-
     def __init__(self, config: GraphTransformerLayerConfig):
         super().__init__(config)
 
         self.attention: MultiHeadAttentionLayerBase = self.MULTY_HEAD_ATTENTION_LAYER(
-            config
+            config.multy_head_attention_layer
         )
-        self.h_branch: BranchFFNBase = self.H_BRANCH_FFN(config)
-        self.e_branch: BranchFFNBase = self.E_BRANCH_FFN(config)
+        self.h_branch: BranchFFNBase = self.H_BRANCH_FFN(config.h_branch_config)
+        self.e_branch: BranchFFNBase = self.E_BRANCH_FFN(config.e_branch_config)
 
     def forward(self, g: dgl.DGLHeteroGraph, h: torch.Tensor, e: torch.Tensor):
         h_in1 = h  # for first residual connection
@@ -66,3 +70,9 @@ class GraphTransformerLayer(GraphTransformerLayerBase):
             self.num_heads,
             self.residual,
         )
+
+
+class GraphTransformerLayerDefault(GraphTransformerLayer):
+    H_BRANCH_FFN = BranchFFNAttentionDefault
+    E_BRANCH_FFN = BranchFFNAttentionDefault
+    MULTY_HEAD_ATTENTION_LAYER = MultiHeadAttentionLayer

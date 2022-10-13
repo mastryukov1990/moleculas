@@ -31,8 +31,8 @@ class NormBase(nn.Module, metaclass=ABCMeta):
         pass
 
 
-class LayerNormStable(NormBase):
-    NORM = nn.LayerNorm
+class LayerNormDefault(NormBase):
+    NORM = nn.BatchNorm1d
 
     def __init__(self, config: NormConfig):
         super().__init__(config)
@@ -53,5 +53,9 @@ class LayerNormStable(NormBase):
         return x
 
 
-class BatchNormStable(LayerNormStable):
+class LayerNorm(LayerNormDefault):
+    NORM = nn.LayerNorm
+
+
+class BatchNorm(LayerNormDefault):
     NORM = nn.BatchNorm1d

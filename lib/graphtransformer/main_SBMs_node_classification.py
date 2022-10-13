@@ -191,7 +191,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 writer.add_scalar("val/_loss", epoch_val_loss, epoch)
                 writer.add_scalar("train/_acc", epoch_train_acc, epoch)
                 writer.add_scalar("val/_acc", epoch_val_acc, epoch)
-                writer.add_scalar("test/_acc", epoch_test_acc, epoch)
+                writer.add_scalar("tests/_acc", epoch_test_acc, epoch)
                 writer.add_scalar(
                     "learning_rate", optimizer.param_groups[0]["lr"], epoch
                 )

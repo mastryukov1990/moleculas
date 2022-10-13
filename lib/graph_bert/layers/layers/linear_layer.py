@@ -3,24 +3,26 @@ from abc import ABCMeta, abstractmethod
 import torch
 from torch import nn
 
+from lib.graph_bert.layers.config.block_configs import ComposeInBlock
 from lib.graph_bert.layers.config.config_base import *
 
 LinearLayerConfigName = "linear_layer"
 
 
+@attr.s
 class LinearLayerConfig(
-    InDimConfig,
-    OutDimConfig,
+    ComposeInBlock,
     BiasConfig,
     ActivationConfig,
     DropoutConfig,
     LayerNormConfig,
     BatchNormConfig,
+    CopyConfig,
 ):
     pass
 
 
-class LinearLayerBase(nn.Module, metaclass=ABCMeta):
+class LinearLayerBase(nn.Module):
     NEURON_LAYER: nn.Module
     ACTIVATION: nn.Module
     DROPOUT: nn.Module
@@ -38,11 +40,11 @@ class LinearLayerBase(nn.Module, metaclass=ABCMeta):
 
 
 class LinearLayerInit(LinearLayerBase):
-    NEURON_LAYER: nn.Module = nn.Linear
-    ACTIVATION: nn.Module = nn.ReLU
-    DROPOUT: nn.Module = nn.Dropout
-    LAYER_NORM: nn.Module = nn.LayerNorm
-    BATCH_NORM: nn.Module = nn.BatchNorm1d
+    NEURON_LAYER = nn.Linear
+    ACTIVATION = nn.ReLU
+    DROPOUT = nn.Dropout
+    LAYER_NORM = nn.LayerNorm
+    BATCH_NORM = nn.BatchNorm1d
 
     def __init__(self, config: LinearLayerConfig):
         super().__init__(config=config)
@@ -54,6 +56,7 @@ class LinearLayerInit(LinearLayerBase):
         self.layer_norm = self.LAYER_NORM(config.out_dim) if config.layer_norm else None
         self.batch_norm = self.BATCH_NORM(config.out_dim) if config.batch_norm else None
 
+    @abstractmethod
     def forward(self, x: torch.Tensor):
         pass
 
@@ -78,12 +81,12 @@ class LinearActivationNormalization(LinearLayerInit):
 
 
 class LinearWithSigmoid(LinearActivationNormalization):
-    ACTIVATION = nn.Sigmoid()
+    ACTIVATION = nn.Sigmoid
 
 
 class LinearWithLeakyReLU(LinearActivationNormalization):
-    ACTIVATION = nn.LeakyReLU()
+    ACTIVATION = nn.LeakyReLU
 
 
 class LinearWithSoftMax(LinearActivationNormalization):
-    ACTIVATION = nn.Softmax()
+    ACTIVATION = nn.Softmax

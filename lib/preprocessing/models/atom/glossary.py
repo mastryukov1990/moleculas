@@ -123,3 +123,9 @@ class AtomGlossary:
         self, value: Any, atom_property: AtomProperty
     ) -> int:
         return self.as_dict[atom_property][value]
+
+    def get_num_atoms(self):
+        return len(self.ATOM_TYPES)
+
+
+atom_glossary = AtomGlossary()

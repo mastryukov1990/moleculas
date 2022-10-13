@@ -1,3 +1,6 @@
+import abc
+import copy
+from abc import ABCMeta
 from enum import Enum
 from typing import Optional, List
 
@@ -9,7 +12,6 @@ import json
 from lib.logger import Logger
 
 logger = Logger(__name__)
-
 
 BASE_SECTION = "base"
 
@@ -52,6 +54,11 @@ class Config:
         return result
 
 
+class CopyConfig:
+    def get_copy(self):
+        return copy.copy(self)
+
+
 @attr.s
 class HiddenDimConfig:
     hidden_dim: int = attr.ib(default=256)
@@ -60,11 +67,6 @@ class HiddenDimConfig:
 @attr.s
 class InDimConfig:
     in_dim: int = attr.ib(default=128)
-
-
-@attr.s
-class OutDimConfig:
-    out_dim: int = attr.ib(default=128)
 
 
 @attr.s

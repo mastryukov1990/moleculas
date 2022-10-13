@@ -14,7 +14,7 @@ class load_SBMsDataSetDGL(torch.utils.data.Dataset):
     def __init__(self, data_dir, name, split):
 
         self.split = split
-        self.is_test = split.lower() in ["test", "val"]
+        self.is_test = split.lower() in ["tests", "val"]
         with open(os.path.join(data_dir, name + "_%s.pkl" % self.split), "rb") as f:
             self.dataset = pickle.load(f)
         self.node_labels = []
@@ -79,7 +79,7 @@ class SBMsDatasetDGL(torch.utils.data.Dataset):
         self.name = name
         data_dir = "data/SBMs"
         self.train = load_SBMsDataSetDGL(data_dir, name, split="train")
-        self.test = load_SBMsDataSetDGL(data_dir, name, split="test")
+        self.test = load_SBMsDataSetDGL(data_dir, name, split="tests")
         self.val = load_SBMsDataSetDGL(data_dir, name, split="val")
         print("[I] Finished loading.")
         print("[I] Data load time: {:.4f}s".format(time.time() - start))
@@ -229,7 +229,7 @@ class SBMsDataset(torch.utils.data.Dataset):
             self.val = f[1]
             self.test = f[2]
         print(
-            "train, test, val sizes :", len(self.train), len(self.test), len(self.val)
+            "train, tests, val sizes :", len(self.train), len(self.test), len(self.val)
         )
         print("[I] Finished loading.")
         print("[I] Data load time: {:.4f}s".format(time.time() - start))

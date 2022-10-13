@@ -3,8 +3,9 @@ import abc
 import torch
 from torch import nn
 
+from lib.graph_bert.layers.config.block_configs import ComposeInBlockTopologyBase
 from lib.graph_bert.layers.config.config_base import *
-from lib.graph_bert.layers.layers.add import SumAddLayerStable, AddLayerBase
+from lib.graph_bert.layers.layers.add import SumAddLayer, AddLayerBase
 from lib.graph_bert.layers.layers.linear_layer import (
     LinearWithLeakyReLU,
     LinearLayerBase,
@@ -22,6 +23,26 @@ class FullyConnectedConfig(
     pass
 
 
+class ComposeInBlockTopologyBaseFullyConnected(ComposeInBlockTopologyBase):
+    def pre_config(self, config: FullyConnectedConfig) -> LinearLayerConfig:
+        config = config.get_copy()
+        config.in_dim = self.config_in_dim.in_dim
+        config.out_dim = self.config_hidden_dim.hidden_dim
+        return config
+
+    def hidden_config(self, config: FullyConnectedConfig):
+        config = config.get_copy()
+        config.in_dim = self.config_hidden_dim.hidden_dim
+        config.out_dim = self.config_hidden_dim.hidden_dim
+        return config
+
+    def post_config(self, config: FullyConnectedConfig):
+        config = config.get_copy()
+        config.in_dim = self.config_hidden_dim.hidden_dim
+        config.out_dim = self.config_out_dim.out_dim
+        return config
+
+
 class FullyConnectedBlockBase(nn.Module, metaclass=abc.ABCMeta):
     MAIN_BLOCK: nn.Module
     ADD_LAYER: AddLayerBase
@@ -37,57 +58,40 @@ class FullyConnectedBlockBase(nn.Module, metaclass=abc.ABCMeta):
 class FullyConnectedBlock(FullyConnectedBlockBase):
     MAIN_BLOCK = LinearLayerBase
     ADD_LAYER = AddLayerBase
+    COMPOSE_BLOCK_TOPOLOGY = ComposeInBlockTopologyBase
 
     def __init__(self, config: FullyConnectedConfig):
         super().__init__(config)
+        compose_block_config = self.COMPOSE_BLOCK_TOPOLOGY(
+            config,
+            config_in_dim=InDimConfig(config.in_dim),
+            config_out_dim=OutDimConfig(config.out_dim),
+            config_hidden_dim=HiddenDimConfig(config.hidden_dim),
+        )
+
         self.head: LinearLayerBase = self.MAIN_BLOCK(
-            LinearLayerConfig(
-                in_dim=config.in_dim,
-                out_dim=config.hidden_dim,
-                bias=config.bias,
-                activation=config.activation,
-                dropout=config.dropout,
-                layer_norm=config.layer_norm,
-                batch_norm=config.batch_norm,
-            )
+            compose_block_config.pre_config(self.config),
         )
         self.body: nn.ModuleList[LinearLayerBase] = nn.ModuleList(
             [
-                self.MAIN_BLOCK(
-                    LinearLayerConfig(
-                        in_dim=config.hidden_dim,
-                        out_dim=config.hidden_dim,
-                        bias=config.bias,
-                        activation=config.activation,
-                        dropout=config.dropout,
-                        layer_norm=config.layer_norm,
-                        batch_norm=config.batch_norm,
-                    )
-                )
+                self.MAIN_BLOCK(compose_block_config.hidden_config(self.config))
                 for _ in range(config.num_hidden)
             ]
         )
         self.tail: LinearLayerBase = self.MAIN_BLOCK(
-            LinearLayerConfig(
-                in_dim=config.hidden_dim,
-                out_dim=config.out_dim,
-                bias=config.bias,
-                activation=config.activation,
-                dropout=config.dropout,
-                layer_norm=config.layer_norm,
-                batch_norm=config.batch_norm,
-            )
+            compose_block_config.post_config(self.config)
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.head.forward(x)
         for part in self.body:
             x = part.forward(x)
-        self.tail.forward(x)
+        x = self.tail.forward(x)
 
         return x
 
 
 class FullyConnectedLeakyLayer(FullyConnectedBlock):
     MAIN_BLOCK = LinearWithLeakyReLU
-    ADD_LAYER = SumAddLayerStable
+    ADD_LAYER = SumAddLayer
+    COMPOSE_BLOCK_TOPOLOGY = ComposeInBlockTopologyBaseFullyConnected

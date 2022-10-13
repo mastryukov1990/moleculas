@@ -6,6 +6,7 @@ import dgl
 import torch
 from torch import nn
 
+from lib.graph_bert.layers.config.block_configs import ComposeInBlock
 from lib.graph_bert.layers.config.config_base import *
 from lib.logger import Logger
 
@@ -18,9 +19,8 @@ PROJ_E = "proj_e"
 SCORE = "score"
 
 
-class MultiHeadAttentionLayerConfig(
-    InDimConfig, OutDimConfig, NumHeadsConfig, BiasConfig, Config
-):
+@attr.s
+class MultiHeadAttentionLayerConfig(ComposeInBlock, NumHeadsConfig, BiasConfig, Config):
     SECTIONS = [BASE_SECTION, MULTI_HEAD_ATTENTION_LAYER_SECTION]
 
 
@@ -52,14 +52,17 @@ class MultiHeadAttentionLayer(MultiHeadAttentionLayerBase):
         super().__init__(config)
 
         in_dim = config.in_dim
-        out_dim = config.out_dim
-        num_heads = config.num_heads
+
         bias = config.bias
 
-        self.Q = nn.Linear(in_dim, out_dim * num_heads, bias=bias)
-        self.K = nn.Linear(in_dim, out_dim * num_heads, bias=bias)
-        self.V = nn.Linear(in_dim, out_dim * num_heads, bias=bias)
-        self.proj_e = nn.Linear(in_dim, out_dim * num_heads, bias=bias)
+        self.num_heads = config.num_heads
+        self.out_dim = config.out_dim
+        hidden_attention_dim = self.out_dim * self.num_heads
+
+        self.Q = nn.Linear(in_dim, hidden_attention_dim, bias=bias)
+        self.K = nn.Linear(in_dim, hidden_attention_dim, bias=bias)
+        self.V = nn.Linear(in_dim, hidden_attention_dim, bias=bias)
+        self.proj_e = nn.Linear(in_dim, hidden_attention_dim, bias=bias)
 
     def propagate_attention(self, g: dgl.DGLHeteroGraph):
         pass

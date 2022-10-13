@@ -6,10 +6,18 @@ from torch import nn
 
 from lib.graph_bert.layers.layers.linear_layer import (
     LinearLayerInit,
+    LinearLayerConfig,
 )
 
 
-class OutputAttentionLayerBase(nn.Module, metaclass=ABCMeta):
+class OutputAttentionLayerConfig(LinearLayerConfig):
+    pass
+
+
+class OutputAttentionLayerBase(LinearLayerInit):
+    def __init__(self, config: OutputAttentionLayerConfig):
+        super().__init__(config)
+
     @abstractmethod
     def concat(self, x: torch.Tensor) -> torch.Tensor:
         pass
@@ -19,9 +27,9 @@ class OutputAttentionLayerBase(nn.Module, metaclass=ABCMeta):
         pass
 
 
-class OutputAttentionLayer(OutputAttentionLayerBase, LinearLayerInit):
+class OutputAttentionLayer(OutputAttentionLayerBase):
     def concat(self, x: torch.Tensor) -> torch.Tensor:
-        x = x.view(-1, self.output_dim)
+        x = x.view(-1, self.config.in_dim)
 
         return x
 

@@ -29,7 +29,7 @@ class MoleculeDGL(torch.utils.data.Dataset):
 
             assert (
                 len(self.data) == num_graphs
-            ), "Sample num_graphs again; available idx: train/val/test => 10k/1k/1k"
+            ), "Sample num_graphs again; available idx: train/val/tests => 10k/1k/1k"
 
         """
         data is a list of Molecule dict objects with following attributes
@@ -112,11 +112,11 @@ class MoleculeDatasetDGL(torch.utils.data.Dataset):
             data_dir = "./data/molecules/zinc_full"
             self.train = MoleculeDGL(data_dir, "train", num_graphs=220011)
             self.val = MoleculeDGL(data_dir, "val", num_graphs=24445)
-            self.test = MoleculeDGL(data_dir, "test", num_graphs=5000)
+            self.test = MoleculeDGL(data_dir, "tests", num_graphs=5000)
         else:
             self.train = MoleculeDGL(data_dir, "train", num_graphs=10000)
             self.val = MoleculeDGL(data_dir, "val", num_graphs=1000)
-            self.test = MoleculeDGL(data_dir, "test", num_graphs=1000)
+            self.test = MoleculeDGL(data_dir, "tests", num_graphs=1000)
         print("Time taken: {:.4f}s".format(time.time() - t0))
 
 
@@ -266,7 +266,7 @@ class MoleculeDataset(torch.utils.data.Dataset):
             self.num_atom_type = f[3]
             self.num_bond_type = f[4]
         print(
-            "train, test, val sizes :", len(self.train), len(self.test), len(self.val)
+            "train, tests, val sizes :", len(self.train), len(self.test), len(self.val)
         )
         print("[I] Finished loading.")
         print("[I] Data load time: {:.4f}s".format(time.time() - start))

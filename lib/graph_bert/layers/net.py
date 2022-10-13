@@ -5,6 +5,7 @@ from torch import nn
 
 from lib.graph_bert.layers.blocks.graph_transformer import (
     GraphTransformerLayerBase,
+    GraphTransformerLayerConfig,
 )
 from lib.graph_bert.layers.config.net_config import NetConfig
 from lib.graph_bert.layers.mlp_readout_layer import MLPReadout
@@ -39,10 +40,7 @@ class GraphBert(GraphBertBase):
         self.in_feat_dropout = nn.Dropout(config.in_feat_dropout)
 
         self.layers = nn.ModuleList(
-            [
-                self.GRAPH_TRANSFORMER_LAYER(config)
-                for _ in range(self.num_transforms - 1)
-            ]
+            [self.GRAPH_TRANSFORMER_LAYER() for _ in range(self.num_transforms - 1)]
         )
         self.layers.append(self.GRAPH_TRANSFORMER_LAYER(config))
         self.MLP_layer = MLPReadout(config)

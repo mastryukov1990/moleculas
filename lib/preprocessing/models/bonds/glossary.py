@@ -39,3 +39,6 @@ class BondGlossary:
         self, value: Any, bond_property: BondProperty
     ) -> int:
         return self.as_dict[bond_property][value]
+
+
+bond_glossary = BondGlossary()

@@ -5,7 +5,7 @@ torchaudio
 rdkit
 pandas
 torch_geometric
-colorama
+colorama~=0.4.5
 pyarrow
 dgl~=0.9.1
 numpy~=1.23.3
@@ -16,3 +16,4 @@ attrs~=21.4.0
 yaml~=0.2.5
 pyyaml~=6.0
 pydantic~=1.9.0
+pytest~=7.1.2

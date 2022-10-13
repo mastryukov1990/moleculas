@@ -1,6 +1,7 @@
 PYTHON?=python
 PYTHONPATH=./
 LIB_DIR=lib
+TESTS_DIR=tests
 
 ls:
 	ls $(LIB_DIR)
