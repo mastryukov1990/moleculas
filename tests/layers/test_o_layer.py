@@ -1,12 +1,15 @@
 import torch
 
 from lib.graph_bert.layers.layers.linear_layer import LinearLayerConfig
-from lib.graph_bert.layers.layers.o_layer import OutputAttentionLayer
+from lib.graph_bert.layers.layers.o_layer import (
+    OutputAttentionLayer,
+    OutputAttentionLayerConfig,
+)
 
 
 def test_attention_layer():
-    config = LinearLayerConfig(in_dim=10, out_dim=20)
-    batch = 2
+    config = OutputAttentionLayerConfig(in_dim=10, out_dim=20)
+    batch = 3
 
     x = torch.ones([batch, config.in_dim])
 

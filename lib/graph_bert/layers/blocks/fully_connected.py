@@ -5,7 +5,6 @@ from torch import nn
 
 from lib.graph_bert.layers.config.block_configs import ComposeInBlockTopologyBase
 from lib.graph_bert.layers.config.config_base import *
-from lib.graph_bert.layers.layers.add import SumAddLayer, AddLayerBase
 from lib.graph_bert.layers.layers.linear_layer import (
     LinearWithLeakyReLU,
     LinearLayerBase,
@@ -44,8 +43,8 @@ class ComposeInBlockTopologyBaseFullyConnected(ComposeInBlockTopologyBase):
 
 
 class FullyConnectedBlockBase(nn.Module, metaclass=abc.ABCMeta):
-    MAIN_BLOCK: nn.Module
-    ADD_LAYER: AddLayerBase
+    MAIN_BLOCK: LinearLayerBase
+    COMPOSE_BLOCK_TOPOLOGY = ComposeInBlockTopologyBase
 
     def __init__(self, config: FullyConnectedConfig):
         super().__init__()
@@ -56,10 +55,6 @@ class FullyConnectedBlockBase(nn.Module, metaclass=abc.ABCMeta):
 
 
 class FullyConnectedBlock(FullyConnectedBlockBase):
-    MAIN_BLOCK = LinearLayerBase
-    ADD_LAYER = AddLayerBase
-    COMPOSE_BLOCK_TOPOLOGY = ComposeInBlockTopologyBase
-
     def __init__(self, config: FullyConnectedConfig):
         super().__init__(config)
         compose_block_config = self.COMPOSE_BLOCK_TOPOLOGY(
@@ -93,5 +88,4 @@ class FullyConnectedBlock(FullyConnectedBlockBase):
 
 class FullyConnectedLeakyLayer(FullyConnectedBlock):
     MAIN_BLOCK = LinearWithLeakyReLU
-    ADD_LAYER = SumAddLayer
     COMPOSE_BLOCK_TOPOLOGY = ComposeInBlockTopologyBaseFullyConnected

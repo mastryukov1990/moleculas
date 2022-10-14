@@ -2,7 +2,7 @@ import abc
 import copy
 from abc import ABCMeta
 from enum import Enum
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 import attr
 from pydantic import BaseModel
@@ -57,6 +57,12 @@ class Config:
 class CopyConfig:
     def get_copy(self):
         return copy.copy(self)
+
+
+class FromDictConfig:
+    @classmethod
+    def from_dict(cls, fields: Dict):
+        return cls(**fields)
 
 
 @attr.s
@@ -157,3 +163,23 @@ class PostAddLayerConfig:
 @attr.s
 class NumHiddenConfig:
     num_hidden: int = attr.ib(default=10)
+
+
+@attr.s
+class PosEncDim:
+    pos_enc_dim: int = attr.ib(default=10)
+
+
+@attr.s
+class MaxWlRoleIndex:
+    max_wl_role_index: int = attr.ib(default=37)
+
+
+@attr.s
+class NumAtomType:
+    num_atom_type: int = attr.ib(default=100)
+
+
+@attr.s
+class NumBondType:
+    num_bond_type: int = attr.ib(default=100)

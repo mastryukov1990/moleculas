@@ -29,6 +29,7 @@ class OutputAttentionLayerBase(LinearLayerInit):
 
 class OutputAttentionLayer(OutputAttentionLayerBase):
     def concat(self, x: torch.Tensor) -> torch.Tensor:
+        l = x.shape
         x = x.view(-1, self.config.in_dim)
 
         return x

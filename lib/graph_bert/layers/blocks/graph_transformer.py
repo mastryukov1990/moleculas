@@ -10,22 +10,27 @@ from lib.graph_bert.layers.attention_blocks.base import (
     MultiHeadAttentionLayerConfig,
     MultiHeadAttentionLayer,
 )
+from lib.graph_bert.layers.attention_blocks.multy_head_attention import (
+    MultiHeadAttentionLayerDefault,
+)
 from lib.graph_bert.layers.blocks.branch import (
     BranchFFNBase,
     BranchFFNConfig,
     BranchFFNAttentionDefault,
 )
 from lib.graph_bert.layers.config.config_base import *
+from lib.graph_bert.layers.layers.o_layer import OutputAttentionLayerConfig
 from lib.logger import Logger
+import attr
 
 logger = Logger(__name__)
 
 
 @attr.s
 class GraphTransformerLayerConfig:
-    multy_head_attention_layer: MultiHeadAttentionLayerConfig
-    h_branch_config: BranchFFNConfig
-    e_branch_config: BranchFFNConfig
+    multy_head_attention_conf: MultiHeadAttentionLayerConfig = attr.ib()
+    h_branch_config: BranchFFNConfig = attr.ib()
+    e_branch_config: BranchFFNConfig = attr.ib()
 
 
 class GraphTransformerLayerBase(nn.Module, metaclass=ABCMeta):
@@ -44,7 +49,7 @@ class GraphTransformerLayer(GraphTransformerLayerBase):
         super().__init__(config)
 
         self.attention: MultiHeadAttentionLayerBase = self.MULTY_HEAD_ATTENTION_LAYER(
-            config.multy_head_attention_layer
+            config.multy_head_attention_conf
         )
         self.h_branch: BranchFFNBase = self.H_BRANCH_FFN(config.h_branch_config)
         self.e_branch: BranchFFNBase = self.E_BRANCH_FFN(config.e_branch_config)
@@ -55,10 +60,9 @@ class GraphTransformerLayer(GraphTransformerLayerBase):
 
         # multi-head attention out
         h_attn_out, e_attn_out = self.attention.forward(g, h, e)
-        logger.info(f"[{__name__}] h_attn_out = {h_attn_out.shape} ")
 
-        h = self.h_branch.forward(h, h_in1)
-        e = self.e_branch.forward(e, e_in1)
+        h = self.h_branch.forward(h_attn_out, h_in1)
+        e = self.e_branch.forward(e_attn_out, e_in1)
 
         return h, e
 
@@ -75,4 +79,4 @@ class GraphTransformerLayer(GraphTransformerLayerBase):
 class GraphTransformerLayerDefault(GraphTransformerLayer):
     H_BRANCH_FFN = BranchFFNAttentionDefault
     E_BRANCH_FFN = BranchFFNAttentionDefault
-    MULTY_HEAD_ATTENTION_LAYER = MultiHeadAttentionLayer
+    MULTY_HEAD_ATTENTION_LAYER = MultiHeadAttentionLayerDefault

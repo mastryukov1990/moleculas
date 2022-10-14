@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from lib.graph_bert.layers.attention_blocks.multy_head_attention import (
-    MultiHeadAttentionLayerEdge,
+    MultiHeadAttentionLayerDefault,
 )
 from lib.graph_bert.layers.layers.o_layer import OutputAttentionLayer
 from lib.logger import Logger
@@ -38,7 +38,7 @@ class GraphTransformerLayer(nn.Module):
         self.layer_norm = layer_norm
         self.batch_norm = batch_norm
 
-        self.attention = MultiHeadAttentionLayerEdge(
+        self.attention = MultiHeadAttentionLayerDefault(
             in_dim, out_dim // num_heads, num_heads, use_bias
         )
         self.output_attention_layer = OutputAttentionLayer

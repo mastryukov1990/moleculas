@@ -10,15 +10,25 @@ from torch import nn
 from lib.graph_bert.layers.blocks.fully_connected import (
     FullyConnectedBlock,
     FullyConnectedConfig,
+    FullyConnectedBlockBase,
+    FullyConnectedLeakyLayer,
 )
 
 
-class MLPReadout(nn.Module):
-    FC_LAYER = FullyConnectedBlock
+class MLPReadoutConfig(FullyConnectedConfig):
+    pass
 
-    def __init__(self, config: FullyConnectedConfig):
+
+class MLPReadoutBase(nn.Module):
+    FC_LAYER = FullyConnectedBlockBase
+
+    def __init__(self, config: MLPReadoutConfig):
         super().__init__()
         self.net = self.FC_LAYER(config)
 
     def forward(self, x: torch.Tensor):
         return self.net(x)
+
+
+class MLPReadout(MLPReadoutBase):
+    FC_LAYER = FullyConnectedLeakyLayer

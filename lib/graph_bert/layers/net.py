@@ -28,6 +28,7 @@ class GraphBert(GraphBertBase):
             self.embedding_lap_pos_enc = nn.Linear(
                 config.pos_enc_dim, config.hidden_dim
             )
+
         if self.wl_pos_enc:
             self.embedding_wl_pos_enc = nn.Embedding(
                 config.max_wl_role_index, config.hidden_dim

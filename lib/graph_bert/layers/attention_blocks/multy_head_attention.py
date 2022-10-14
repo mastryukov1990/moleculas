@@ -27,7 +27,7 @@ logger = Logger(__name__)
 EPS = 1e-6
 
 
-class MultiHeadAttentionLayerEdge(MultiHeadAttentionLayer):
+class MultiHeadAttentionLayerDefault(MultiHeadAttentionLayer):
     def propagate_attention(self, g: dgl.DGLHeteroGraph):
         # Compute attention score
         g.apply_edges(src_dot_dst(K_H, Q_H, SCORE))

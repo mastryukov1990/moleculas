@@ -34,24 +34,24 @@ from lib.logger import Logger
 logger = Logger(__name__)
 
 
-class ComposeInBlockTopologyBaseFullyConnected(ComposeInBlockTopologyBase):
-    def pre_config(self, config: FullyConnectedConfig) -> OutputAttentionLayerConfig:
-        config = config.get_copy()
-        config.in_dim = self.config_in_dim.in_dim
-        config.out_dim = self.config_hidden_dim.hidden_dim
-        return config
-
-    def hidden_config(self, config: FullyConnectedConfig) -> OutputAttentionLayerConfig:
-        config = config.get_copy()
-        config.in_dim = self.config_hidden_dim.hidden_dim
-        config.out_dim = self.config_hidden_dim.hidden_dim
-        return config
-
-    def post_config(self, config: FullyConnectedConfig) -> OutputAttentionLayerConfig:
-        config = config.get_copy()
-        config.in_dim = self.config_hidden_dim.hidden_dim
-        config.out_dim = self.config_out_dim.out_dim
-        return config
+# class ComposeInBlockTopologyOutputAttentionLayer(ComposeInBlockTopologyBase):
+#     def pre_config(self, config: FullyConnectedConfig) -> OutputAttentionLayerConfig:
+#         config = config.get_copy()
+#         config.in_dim = self.config_in_dim.in_dim
+#         config.out_dim = self.config_hidden_dim.hidden_dim
+#         return config
+#
+#     def hidden_config(self, config: FullyConnectedConfig) -> OutputAttentionLayerConfig:
+#         config = config.get_copy()
+#         config.in_dim = self.config_hidden_dim.hidden_dim
+#         config.out_dim = self.config_hidden_dim.hidden_dim
+#         return config
+#
+#     def post_config(self, config: FullyConnectedConfig) -> OutputAttentionLayerConfig:
+#         config = config.get_copy()
+#         config.in_dim = self.config_hidden_dim.hidden_dim
+#         config.out_dim = self.config_out_dim.out_dim
+#         return config
 
 
 @attr.s
@@ -73,6 +73,32 @@ class BranchFFNConfig(
     PostAddLayerConfig,
 ):
     SECTIONS = [BASE_SECTION, BRANCH_FFN_SECTION]
+
+
+def get_branch_ffn_config(hidden_dim_attention, hidden_dim):
+    output_attention_config = OutputAttentionLayerConfig(
+        in_dim=hidden_dim_attention,
+        out_dim=hidden_dim,
+    )
+
+    pre_layer_norm = NormConfig(in_dim=hidden_dim)
+    pre_batch_norm = NormConfig(in_dim=hidden_dim)
+
+    fully_connected_config = FullyConnectedConfig(
+        in_dim=hidden_dim, hidden_dim=fcc_hide, out_dim=hidden_dim
+    )
+
+    post_layer_norm = NormConfig(in_dim=hidden_dim)
+    post_batch_norm = NormConfig(in_dim=hidden_dim)
+
+    return BranchFFNConfig(
+        fully_connected_config=fully_connected_config,
+        output_attention_config=output_attention_config,
+        pre_layer_norm=pre_layer_norm,
+        pre_batch_norm=pre_batch_norm,
+        post_layer_norm=post_layer_norm,
+        post_batch_norm=post_batch_norm,
+    )
 
 
 class BranchFFNBase(nn.Module, metaclass=ABCMeta):
