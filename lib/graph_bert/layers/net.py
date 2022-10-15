@@ -8,7 +8,7 @@ from lib.graph_bert.layers.blocks.graph_transformer import (
     GraphTransformerLayerConfig,
 )
 from lib.graph_bert.layers.config.net_config import NetConfig
-from lib.graph_bert.layers.mlp_readout_layer import MLPReadout
+from lib.graph_bert.layers.mlp_readout_layer import MLP
 
 
 class GraphBertBase(nn.Module, metaclass=ABCMeta):
@@ -19,7 +19,7 @@ class GraphBertBase(nn.Module, metaclass=ABCMeta):
 
 class GraphBert(GraphBertBase):
     GRAPH_TRANSFORMER_LAYER = GraphTransformerLayerBase
-    MLP_READOUT = MLPReadout
+    MLP_READOUT = MLP
 
     def __init__(self, config: NetConfig):
         super().__init__(config)
@@ -44,4 +44,4 @@ class GraphBert(GraphBertBase):
             [self.GRAPH_TRANSFORMER_LAYER() for _ in range(self.num_transforms - 1)]
         )
         self.layers.append(self.GRAPH_TRANSFORMER_LAYER(config))
-        self.MLP_layer = MLPReadout(config)
+        self.MLP_layer = MLP(config)

@@ -15,14 +15,14 @@ from lib.graph_bert.layers.blocks.fully_connected import (
 )
 
 
-class MLPReadoutConfig(FullyConnectedConfig):
+class MLPConfig(FullyConnectedConfig):
     pass
 
 
-class MLPReadoutBase(nn.Module):
+class MLPBase(nn.Module):
     FC_LAYER = FullyConnectedBlockBase
 
-    def __init__(self, config: MLPReadoutConfig):
+    def __init__(self, config: MLPConfig):
         super().__init__()
         self.net = self.FC_LAYER(config)
 
@@ -30,5 +30,5 @@ class MLPReadoutBase(nn.Module):
         return self.net(x)
 
 
-class MLPReadout(MLPReadoutBase):
+class MLP(MLPBase):
     FC_LAYER = FullyConnectedLeakyLayer

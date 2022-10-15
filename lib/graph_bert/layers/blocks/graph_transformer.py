@@ -43,6 +43,10 @@ class GraphTransformerLayerBase(nn.Module, metaclass=ABCMeta):
         super().__init__()
         self.config = config
 
+    @abc.abstractmethod
+    def forward(self, g: dgl.DGLHeteroGraph, h: torch.Tensor, e: torch.Tensor):
+        pass
+
 
 class GraphTransformerLayer(GraphTransformerLayerBase):
     def __init__(self, config: GraphTransformerLayerConfig):

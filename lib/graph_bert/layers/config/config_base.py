@@ -106,7 +106,7 @@ class NumHeadsConfig:
 
 
 @attr.s
-class ReadoutConfig:
+class ReadOutConfig:
     readout: Readout = attr.ib(default=Readout.MEAN)
 
 
