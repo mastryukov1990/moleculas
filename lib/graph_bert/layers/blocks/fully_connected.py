@@ -8,7 +8,7 @@ from lib.graph_bert.layers.config.config_base import *
 from lib.graph_bert.layers.layers.linear_layer import (
     LinearWithLeakyReLU,
     LinearLayerBase,
-    LinearLayerConfig,
+    LinearLayerConfig, LinearWithSoftMax,
 )
 
 
@@ -44,6 +44,7 @@ class ComposeInBlockTopologyBaseFullyConnected(ComposeInBlockTopologyBase):
 
 class FullyConnectedBlockBase(nn.Module, metaclass=abc.ABCMeta):
     MAIN_BLOCK: LinearLayerBase
+    TAIL_BLOCK: LinearLayerBase
     COMPOSE_BLOCK_TOPOLOGY = ComposeInBlockTopologyBase
 
     def __init__(self, config: FullyConnectedConfig):
@@ -73,7 +74,7 @@ class FullyConnectedBlock(FullyConnectedBlockBase):
                 for _ in range(config.num_hidden)
             ]
         )
-        self.tail: LinearLayerBase = self.MAIN_BLOCK(
+        self.tail: LinearLayerBase = self.TAIL_BLOCK(
             compose_block_config.post_config(self.config)
         )
 
@@ -88,4 +89,12 @@ class FullyConnectedBlock(FullyConnectedBlockBase):
 
 class FullyConnectedLeakyLayer(FullyConnectedBlock):
     MAIN_BLOCK = LinearWithLeakyReLU
+    TAIL_BLOCK = LinearWithLeakyReLU
+    COMPOSE_BLOCK_TOPOLOGY = ComposeInBlockTopologyBaseFullyConnected
+
+
+
+class FullyConnectedSoftMax(FullyConnectedBlock):
+    MAIN_BLOCK = LinearWithLeakyReLU
+    TAIL_BLOCK = LinearWithSoftMax
     COMPOSE_BLOCK_TOPOLOGY = ComposeInBlockTopologyBaseFullyConnected

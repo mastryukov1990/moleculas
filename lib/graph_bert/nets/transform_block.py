@@ -27,7 +27,7 @@ from lib.graph_bert.layers.config.config_base import (
 from lib.graph_bert.layers.layers.readout import ReadOutBase, ReadOut
 from lib.graph_bert.layers.mlp_readout_layer import (
     MLPConfig,
-    MLP,
+    MLPDefault,
     MLPBase,
 )
 
@@ -58,23 +58,24 @@ class GraphBertConfig(
     pass
 
 
-class GraphBertBase(nn.Module, metaclass=ABCMeta):
+class GraphTransformBlockBase(nn.Module):
     def __init__(self, config: GraphBertConfig):
         super().__init__()
         self.config = config
 
     @abc.abstractmethod
-    def forward(self, x: torch.Tensor):
+    def forward(self, g: dgl.DGLHeteroGraph, h: torch.Tensor, e: torch.Tensor):
         pass
 
 
-class GraphBert(nn.Module):
+
+
+class GraphTransformBlock(GraphTransformBlockBase):
     GRAPH_TRANSFORMER_LAYER = GraphTransformerLayerBase
-    READOUT = ReadOutBase
-    MLP = MLPBase
+
 
     def __init__(self, config: GraphBertConfig):
-        super().__init__()
+        super().__init__(config=config)
 
         self.embedding_h = nn.Embedding(config.num_atom_type, config.in_dim)
 
@@ -92,9 +93,6 @@ class GraphBert(nn.Module):
             self.GRAPH_TRANSFORMER_LAYER(config.graph_transformer_layer_config_out)
         )
 
-        self.readout = self.READOUT(config.read_out_config)
-
-        self.mlp = self.MLP(config.mlp_layer_config)
 
     def forward(self, g: dgl.DGLHeteroGraph, h: torch.Tensor, e: torch.Tensor):
         # input embedding
@@ -108,12 +106,8 @@ class GraphBert(nn.Module):
 
             h, e = conv.forward(g, h, e)
 
-        hg = self.readout.agg_graph(g, h)
-
-        return self.mlp.forward(hg)
+        return h, e
 
 
-class GraphBertDefault(GraphBert):
+class GraphTransformBlockDefault(GraphTransformBlock):
     GRAPH_TRANSFORMER_LAYER = GraphTransformerLayerDefault
-    READOUT = ReadOut
-    MLP = MLP

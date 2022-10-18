@@ -11,3 +11,7 @@ lint:
 
 fmt:
 	black  $(LIB_DIR) $(TESTS_DIR) $(BIN_DIR)
+
+
+test:
+	@PYTHONPATH=$(PYTHONPATH) $(PYTHON) -m pytest $(TESTS_DIR) -v

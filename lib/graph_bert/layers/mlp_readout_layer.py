@@ -30,5 +30,5 @@ class MLPBase(nn.Module):
         return self.net(x)
 
 
-class MLP(MLPBase):
+class MLPDefault(MLPBase):
     FC_LAYER = FullyConnectedLeakyLayer
