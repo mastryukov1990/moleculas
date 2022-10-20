@@ -68,11 +68,8 @@ class GraphTransformBlockBase(nn.Module):
         pass
 
 
-
-
 class GraphTransformBlock(GraphTransformBlockBase):
     GRAPH_TRANSFORMER_LAYER = GraphTransformerLayerBase
-
 
     def __init__(self, config: GraphBertConfig):
         super().__init__(config=config)
@@ -92,7 +89,6 @@ class GraphTransformBlock(GraphTransformBlockBase):
         self.layers.append(
             self.GRAPH_TRANSFORMER_LAYER(config.graph_transformer_layer_config_out)
         )
-
 
     def forward(self, g: dgl.DGLHeteroGraph, h: torch.Tensor, e: torch.Tensor):
         # input embedding

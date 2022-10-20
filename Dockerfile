@@ -1,4 +1,4 @@
-FROM wallies/python-cuda:3.10-cuda11.6-runtime
+FROM nvidia/cuda:11.2.1-runtime-ubuntu20.04
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 # Install base utilities

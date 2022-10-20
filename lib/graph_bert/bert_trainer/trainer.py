@@ -54,8 +54,6 @@ class GraphBertTrainerBase:
     def test_model(self):
         pass
 
-
-
     @abc.abstractmethod
     def collect_train_metrics(self):
         pass
@@ -89,11 +87,9 @@ class GraphBertTrainer(GraphBertTrainerBase):
 
             mask_h = self.get_mask(h_indexes_raw)
 
-
             h_indexes = torch.clone(h_indexes_raw)
             h_indexes[mask_h] = 0
 
             embed_h, embed_e = self.model.forward(g, h_indexes, e_indexes_raw)
 
             embed_h[mask_h]
-

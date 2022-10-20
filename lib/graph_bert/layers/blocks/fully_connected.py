@@ -8,7 +8,8 @@ from lib.graph_bert.layers.config.config_base import *
 from lib.graph_bert.layers.layers.linear_layer import (
     LinearWithLeakyReLU,
     LinearLayerBase,
-    LinearLayerConfig, LinearWithSoftMax,
+    LinearLayerConfig,
+    LinearWithSoftMax,
 )
 
 
@@ -91,7 +92,6 @@ class FullyConnectedLeakyLayer(FullyConnectedBlock):
     MAIN_BLOCK = LinearWithLeakyReLU
     TAIL_BLOCK = LinearWithLeakyReLU
     COMPOSE_BLOCK_TOPOLOGY = ComposeInBlockTopologyBaseFullyConnected
-
 
 
 class FullyConnectedSoftMax(FullyConnectedBlock):

@@ -1,7 +1,8 @@
 import attr
 
 from lib.graph_bert.layers.blocks.fully_connected import (
-    FullyConnectedConfig, FullyConnectedSoftMax,
+    FullyConnectedConfig,
+    FullyConnectedSoftMax,
 )
 
 

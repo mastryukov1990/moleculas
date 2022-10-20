@@ -12,7 +12,10 @@ from lib.graph_bert.layers.layers.o_layer import OutputAttentionLayerConfig
 from lib.graph_bert.layers.layers.readout import ReadOut
 from lib.graph_bert.layers.mlp_readout_layer import MLPDefault, MLPConfig
 from lib.graph_bert.nets.get_simple_config import get_bert_config_simple
-from lib.graph_bert.nets.transform_block import GraphTransformBlockDefault, GraphBertConfig
+from lib.graph_bert.nets.transform_block import (
+    GraphTransformBlockDefault,
+    GraphBertConfig,
+)
 from lib.graph_bert.nets.readout_mlp_net import ReadOutMlpDefault, ReadOutMlpConfig
 from lib.preprocessing.dataset import MoleculesDataset
 from lib.preprocessing.models.atom.glossary import atom_glossary
