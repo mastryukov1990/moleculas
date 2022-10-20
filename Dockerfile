@@ -27,4 +27,4 @@ RUN jupyter contrib nbextension install --user && \
     jupyter nbextension enable freeze/main && \
     jupyter nbextension enable toc2/main && \
     jupyter nbextension enable  execute_time/ExecuteTime && \
-    python -m ipykernel.kernelspec
+    python3.10 -m ipykernel.kernelspec
