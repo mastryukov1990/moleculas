@@ -1,10 +1,16 @@
 import torch
+from hydra import compose, initialize
 
-from lib.graph_bert.layers.layers.norm import BatchNorm, NormConfig
+from lib.graph_bert.layers.layers.norm import BatchNorm
+
+from lib.graph_bert.nets.config import cfg
 
 
 def test_batch_norm():
-    config = NormConfig()
+
+    config = (
+        cfg.transformer_block_config.graph_transformer_layer_config.e_branch_config.pre_layer_norm
+    )
     x_batch = torch.ones([2, config.in_dim])
 
     norm = BatchNorm(config)

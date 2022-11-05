@@ -2,6 +2,7 @@ import abc
 from abc import ABCMeta
 
 import torch
+from hydra.core.config_store import ConfigStore
 from torch import nn
 
 from lib.graph_bert.common import sum_tensors

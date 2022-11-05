@@ -19,7 +19,7 @@ PROJ_E = "proj_e"
 SCORE = "score"
 
 
-@attr.s
+@dataclass
 class MultiHeadAttentionLayerConfig(ComposeInBlock, NumHeadsConfig, BiasConfig, Config):
     SECTIONS = [BASE_SECTION, MULTI_HEAD_ATTENTION_LAYER_SECTION]
 

@@ -106,7 +106,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
     device = net_params["device"]
 
-    # Write the network and optimization hyper-parameters in folder config/
+    # Write the network and optimization hyper-parameters in folder conf/
     with open(write_config_file + ".txt", "w") as f:
         f.write(
             """Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n\nTotal Parameters: {}\n\n""".format(
@@ -284,8 +284,8 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--config",
-        help="Please give a config.json file with training/model/data/param details",
+        "--conf",
+        help="Please give a conf.json file with training/model/data/param details",
     )
     parser.add_argument("--gpu_id", help="Please give a value for gpu id")
     parser.add_argument("--model", help="Please give a value for model name")

@@ -1,24 +1,29 @@
 import abc
-from collections import defaultdict
+import copy
+from dataclasses import dataclass
+from IPython.display import clear_output
 
-import attr
 import dgl.dataloading
 import torch.optim.optimizer
 
-from torch import nn
 
 from lib.graph_bert.bert_trainer.common import get_mask
 from lib.graph_bert.bert_trainer.metric_collector import MLMetricCollector
-from lib.graph_bert.nets.transform_block import GraphTransformBlockBase, GraphBertConfig
+from lib.graph_bert.nets.graph_bert import GraphBertBase
+from lib.logger import Logger
 from lib.preprocessing.models.molecul_graph_builder.dgl_graph import FEATURE_COLUMN
 
+import matplotlib.pyplot as plt
 
-@attr.s
+logger = Logger(__name__)
+
+@dataclass
 class TrainParamsConfig:
-    mask_p: float = attr.ib()
-
-    epoch: int = attr.ib()
-    loss: nn.Module = attr.ib()
+    mask_p: float = 0.5
+    epoch: int = 2
+    is_classifier: bool = True
+    is_readout: bool = True
+    is_jupyter: bool = False
 
 
 class GraphBertTrainerBase:
@@ -59,19 +64,24 @@ class GraphBertTrainerBase:
         pass
 
 
-class GraphBertTrainer(GraphBertTrainerBase):
+class GraphBertTrainerDefault(GraphBertTrainerBase):
     def __init__(
         self,
         train_params: TrainParamsConfig,
-        bert: GraphTransformBlockBase,
-        bert_optimizer: torch.optim.optimizer,
+        bert: GraphBertBase,
+        bert_optimizer: torch.optim.Optimizer,
+        classifier_loss: torch.nn.CrossEntropyLoss,
+        readout_loss: torch.nn.CrossEntropyLoss,
         train_dataloader: dgl.dataloading.GraphCollator,
         test_dataloader: dgl.dataloading.GraphCollator,
     ):
         super().__init__(train_params)
 
         self.bert = bert
-        self.optimizer = optimizer
+        self.optimizer = bert_optimizer
+
+        self.classifier_loss = classifier_loss
+        self.readout_loss = readout_loss
 
         self.train_dataloader = train_dataloader
         self.test_dataloader = test_dataloader
@@ -79,17 +89,59 @@ class GraphBertTrainer(GraphBertTrainerBase):
     def get_mask(self, batch_index: torch.Tensor) -> torch.Tensor:
         return get_mask(batch_index.shape, self.train_params.mask_p)
 
+    def train(self):
+        for i in range(self.train_params.epoch):
+            self.train_epoch()
+
+
     def train_epoch(self):
+
         for g, label in self.train_dataloader:
+            self.train_batch(g, label)
 
-            h_indexes_raw: torch.Tensor = g.ndata[FEATURE_COLUMN]
-            e_indexes_raw: torch.Tensor = g.edata[FEATURE_COLUMN]
+        self.metrics_collector.update_train_collector()
+        logger.info_metrics(self.metrics_collector.train_metric_collector.get_metrics())
 
-            mask_h = self.get_mask(h_indexes_raw)
+        if self.train_params.is_jupyter:
 
-            h_indexes = torch.clone(h_indexes_raw)
-            h_indexes[mask_h] = 0
+            plt.figure()
+            for i, v in self.metrics_collector.train_metric_collector.get_metrics().items():
+                plt.plot(v, label=i)
+            plt.legend()
+            plt.grid()
+            plt.show()
+            clear_output(wait=True)
 
-            embed_h, embed_e = self.model.forward(g, h_indexes, e_indexes_raw)
 
-            embed_h[mask_h]
+
+    def train_batch(self, g: dgl.DGLHeteroGraph, label: torch.Tensor):
+        classifier_loss = 0
+        readout_loss = 0
+
+        h_indexes_raw: torch.Tensor = g.ndata[FEATURE_COLUMN]
+        e_indexes_raw: torch.Tensor = g.edata[FEATURE_COLUMN]
+
+
+        mask_h = self.get_mask(h_indexes_raw)
+
+        classifier_h, readout_h = self.bert.forward(
+            g, h_indexes_raw, e_indexes_raw, mask_h
+        )
+
+        if self.train_params.is_classifier:
+            labels = g.ndata[FEATURE_COLUMN][mask_h]
+            classifier_loss = self.classifier_loss(
+                classifier_h, labels,
+            ).mean()
+            # torch.argmax(classifier_h, 1)
+
+        if self.train_params.is_readout:
+            readout_loss = self.readout_loss(readout_h, label)
+
+        loss = classifier_loss + readout_loss
+        loss.backward()
+        self.optimizer.step()
+
+        self.metrics_collector.train_metric_collector.collect_batch(
+            "loss", copy.deepcopy(loss.item()), 1
+        )

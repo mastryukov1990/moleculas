@@ -2,11 +2,13 @@ version: '3.8'
 services:
     moleculas:
         build: .
+        image: moleculas
         environment:
             - TZ=Europe/Moscow
             - DISPLAY=$DISPLAY
             - PYTHONPATH=.
             - CUDA_VISIBLE_DEVICES="0"
+            - NVIDIA_VISIBLE_DEVICES=all
         ports:
             - "8020:8020"
         volumes:

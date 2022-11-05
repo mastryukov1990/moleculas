@@ -2,21 +2,11 @@ import dgl
 import torch
 from dgl.dataloading import GraphDataLoader
 
-from lib.graph_bert.layers.attention_blocks.base import MultiHeadAttentionLayerConfig
-from lib.graph_bert.layers.blocks.branch import BranchFFNConfig
-from lib.graph_bert.layers.blocks.fully_connected import FullyConnectedConfig
-from lib.graph_bert.layers.blocks.graph_transformer import GraphTransformerLayerConfig
-from lib.graph_bert.layers.config.config_base import ReadOutConfig
-from lib.graph_bert.layers.layers.norm import NormConfig
-from lib.graph_bert.layers.layers.o_layer import OutputAttentionLayerConfig
-from lib.graph_bert.layers.layers.readout import ReadOut
-from lib.graph_bert.layers.mlp_readout_layer import MLPDefault, MLPConfig
-from lib.graph_bert.nets.get_simple_config import get_bert_config_simple
+from lib.graph_bert.nets.config import cfg
 from lib.graph_bert.nets.transform_block import (
     GraphTransformBlockDefault,
-    GraphBertConfig,
 )
-from lib.graph_bert.nets.readout_mlp_net import ReadOutMlpDefault, ReadOutMlpConfig
+from lib.graph_bert.nets.readout_mlp_net import ReadOutMlpDefault
 from lib.preprocessing.dataset import MoleculesDataset
 from lib.preprocessing.models.atom.glossary import atom_glossary
 from lib.preprocessing.models.bonds.glossary import bond_glossary
@@ -27,7 +17,7 @@ from lib.preprocessing.models.molecul_graph_builder.dgl_graph import (
 
 
 def test_graph_bert(molecules):
-    config = get_bert_config_simple()
+    # config = get_bert_config_simple()
     batch = 10
 
     molecule_graph_builder = [
@@ -51,16 +41,10 @@ def test_graph_bert(molecules):
         batch_e = g.edata[FEATURE_COLUMN]
 
         break
-
     batch_h = batch_h.squeeze(1)
     batch_e = batch_e.squeeze(1)
-    net = GraphTransformBlockDefault(config)
+    net = GraphTransformBlockDefault(cfg.transformer_block_config)
     h, e = net.forward(g, batch_h, batch_e)
-    target = ReadOutMlpDefault(
-        ReadOutMlpConfig(
-            read_out_config=config.read_out_config,
-            mlp_layer_config=config.mlp_layer_config,
-        )
-    )(g, h)
+    target = ReadOutMlpDefault(cfg.readout_config).forward(g, h)
 
-    assert list(target.shape) == [3, 768]
+    assert list(target.shape) == [3, cfg.readout_config.mlp_layer_config.out_dim]

@@ -3,9 +3,10 @@ import abc
 import attr
 
 from abc import ABCMeta
-
+from dataclasses import dataclass
 import dgl
 import torch
+from hydra.core.config_store import ConfigStore
 from torch import nn
 
 from lib.graph_bert.layers.blocks.graph_transformer import (
@@ -31,35 +32,35 @@ from lib.graph_bert.layers.mlp_readout_layer import (
     MLPBase,
 )
 
+GraphBertTransformerConfigGroup = "transform_config_group"
+GraphBertTransformerConfigName = "transform_config_name"
 
-@attr.s
+
+@dataclass
 class GraphNetsConfig:
-    graph_transformer_layer_config: GraphTransformerLayerConfig = attr.ib()
-    graph_transformer_layer_config_out: GraphTransformerLayerConfig = attr.ib()
-    read_out_config: ReadOutConfig = attr.ib()
-    mlp_layer_config: MLPConfig = attr.ib()
-
-    @property
-    def in_dim(self):
-        return self.graph_transformer_layer_config.multy_head_attention_conf.in_dim
+    graph_transformer_layer_config: GraphTransformerLayerConfig = (
+        GraphTransformerLayerConfig()
+    )
+    graph_transformer_layer_config_out: GraphTransformerLayerConfig = (
+        GraphTransformerLayerConfig()
+    )
 
 
-@attr.s
-class GraphBertConfig(
-    GraphNetsConfig,
+@dataclass
+class GraphBertTransformerConfig(
     NumTransformsConfig,
     PosEncDim,
     MaxWlRoleIndex,
     NumAtomType,
     NumBondType,
     InFeatDropout,
-    FromDictConfig,
+    GraphNetsConfig,
 ):
     pass
 
 
 class GraphTransformBlockBase(nn.Module):
-    def __init__(self, config: GraphBertConfig):
+    def __init__(self, config: GraphBertTransformerConfig):
         super().__init__()
         self.config = config
 
@@ -71,12 +72,18 @@ class GraphTransformBlockBase(nn.Module):
 class GraphTransformBlock(GraphTransformBlockBase):
     GRAPH_TRANSFORMER_LAYER = GraphTransformerLayerBase
 
-    def __init__(self, config: GraphBertConfig):
+    def __init__(self, config: GraphBertTransformerConfig):
         super().__init__(config=config)
 
-        self.embedding_h = nn.Embedding(config.num_atom_type, config.in_dim)
+        self.embedding_h = nn.Embedding(
+            config.num_atom_type,
+            config.graph_transformer_layer_config.multy_head_attention_conf.in_dim,
+        )
 
-        self.embedding_e = nn.Embedding(config.num_bond_type, config.in_dim)
+        self.embedding_e = nn.Embedding(
+            config.num_bond_type,
+            config.graph_transformer_layer_config.multy_head_attention_conf.in_dim,
+        )
 
         self.in_feat_dropout = nn.Dropout(config.in_feat_dropout)
 
@@ -93,9 +100,10 @@ class GraphTransformBlock(GraphTransformBlockBase):
     def forward(self, g: dgl.DGLHeteroGraph, h: torch.Tensor, e: torch.Tensor):
         # input embedding
         h = self.embedding_h(h)
-        h = self.in_feat_dropout(h)
-
         e = self.embedding_e(e)
+
+        h = h.squeeze(1)
+        e = e.squeeze(1)
 
         # convnets
         for i, conv in enumerate(self.layers):
@@ -107,3 +115,12 @@ class GraphTransformBlock(GraphTransformBlockBase):
 
 class GraphTransformBlockDefault(GraphTransformBlock):
     GRAPH_TRANSFORMER_LAYER = GraphTransformerLayerDefault
+
+
+def register_configs() -> None:
+    cs = ConfigStore.instance()
+    cs.store(
+        group=GraphBertTransformerConfigGroup,
+        name=GraphBertTransformerConfigName,
+        node=GraphBertTransformerConfig,
+    )

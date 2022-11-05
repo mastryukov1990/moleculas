@@ -2,12 +2,16 @@ import abc
 from abc import ABCMeta, abstractmethod
 
 import torch
+from hydra.core.config_store import ConfigStore
 from torch import nn
 
 from lib.graph_bert.layers.config.config_base import InDimConfig
 from lib.logger import Logger
 
 logger = Logger(__name__)
+
+NormConfigBlock = "norm_config"
+NormConfigName = "norm_config"
 
 
 class NormConfig(InDimConfig):
@@ -59,3 +63,12 @@ class LayerNorm(LayerNormDefault):
 
 class BatchNorm(LayerNormDefault):
     NORM = nn.BatchNorm1d
+
+
+def register_configs() -> None:
+    cs = ConfigStore.instance()
+    cs.store(
+        group=NormConfigBlock,
+        name=NormConfigName,
+        node=NormConfig,
+    )

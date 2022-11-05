@@ -1,28 +1,24 @@
-from abc import ABCMeta
-
-import attr
 import torch
+from hydra.core.config_store import ConfigStore
 from torch import nn
 
 from lib.graph_bert.layers.blocks.fully_connected import (
-    FullyConnectedBlock,
     FullyConnectedBlockBase,
     FullyConnectedConfig,
     FullyConnectedLeakyLayer,
 )
-from lib.graph_bert.layers.config.block_configs import ComposeInBlockTopologyBase
 from lib.graph_bert.layers.config.config_base import *
 from lib.graph_bert.layers.layers.add import (
     AddLayerBase,
     SumAddLayer,
 )
-from lib.graph_bert.layers.layers.linear_layer import LinearLayerConfig
 from lib.graph_bert.layers.layers.norm import (
     NormBase,
     NormConfig,
-    LayerNormDefault,
     LayerNorm,
     BatchNorm,
+    NormConfigBlock,
+    NormConfigName,
 )
 from lib.graph_bert.layers.layers.o_layer import (
     OutputAttentionLayerBase,
@@ -34,71 +30,29 @@ from lib.logger import Logger
 logger = Logger(__name__)
 
 
-# class ComposeInBlockTopologyOutputAttentionLayer(ComposeInBlockTopologyBase):
-#     def pre_config(self, config: FullyConnectedConfig) -> OutputAttentionLayerConfig:
-#         config = config.get_copy()
-#         config.in_dim = self.config_in_dim.in_dim
-#         config.out_dim = self.config_hidden_dim.hidden_dim
-#         return config
-#
-#     def hidden_config(self, config: FullyConnectedConfig) -> OutputAttentionLayerConfig:
-#         config = config.get_copy()
-#         config.in_dim = self.config_hidden_dim.hidden_dim
-#         config.out_dim = self.config_hidden_dim.hidden_dim
-#         return config
-#
-#     def post_config(self, config: FullyConnectedConfig) -> OutputAttentionLayerConfig:
-#         config = config.get_copy()
-#         config.in_dim = self.config_hidden_dim.hidden_dim
-#         config.out_dim = self.config_out_dim.out_dim
-#         return config
+BlockBranchConfigGroup = "block_branch_config_group"
+BlockBranchConfigName = "block_branch_config_name"
 
 
-@attr.s
+@dataclass
 class BlockBranchConfig:
-    fully_connected_config: FullyConnectedConfig = attr.ib()
-    output_attention_config: OutputAttentionLayerConfig = attr.ib()
+    fully_connected_config: FullyConnectedConfig = FullyConnectedConfig()
+    output_attention_config: OutputAttentionLayerConfig = OutputAttentionLayerConfig()
 
-    pre_layer_norm: NormConfig = attr.ib()
-    pre_batch_norm: NormConfig = attr.ib()
+    pre_layer_norm: NormConfig = NormConfig()
+    pre_batch_norm: NormConfig = NormConfig()
 
-    post_layer_norm: NormConfig = attr.ib()
-    post_batch_norm: NormConfig = attr.ib()
+    post_layer_norm: NormConfig = NormConfig()
+    post_batch_norm: NormConfig = NormConfig()
 
 
-@attr.s
+@dataclass
 class BranchFFNConfig(
     BlockBranchConfig,
     PreAddLayerConfig,
     PostAddLayerConfig,
 ):
-    SECTIONS = [BASE_SECTION, BRANCH_FFN_SECTION]
-
-
-def get_branch_ffn_config(hidden_dim_attention, hidden_dim):
-    output_attention_config = OutputAttentionLayerConfig(
-        in_dim=hidden_dim_attention,
-        out_dim=hidden_dim,
-    )
-
-    pre_layer_norm = NormConfig(in_dim=hidden_dim)
-    pre_batch_norm = NormConfig(in_dim=hidden_dim)
-
-    fully_connected_config = FullyConnectedConfig(
-        in_dim=hidden_dim, hidden_dim=fcc_hide, out_dim=hidden_dim
-    )
-
-    post_layer_norm = NormConfig(in_dim=hidden_dim)
-    post_batch_norm = NormConfig(in_dim=hidden_dim)
-
-    return BranchFFNConfig(
-        fully_connected_config=fully_connected_config,
-        output_attention_config=output_attention_config,
-        pre_layer_norm=pre_layer_norm,
-        pre_batch_norm=pre_batch_norm,
-        post_layer_norm=post_layer_norm,
-        post_batch_norm=post_batch_norm,
-    )
+    pass
 
 
 class BranchFFNBase(nn.Module, metaclass=ABCMeta):
@@ -185,3 +139,12 @@ class BranchFFNAttentionDefault(BranchFFNAttention):
     LAYER_NORM = LayerNorm
     BATCH_NORM = BatchNorm
     FULLY_CONNECTED_BLOCK = FullyConnectedLeakyLayer
+
+
+def register_configs() -> None:
+    cs = ConfigStore.instance()
+    cs.store(
+        group=BlockBranchConfigGroup,
+        name=BlockBranchConfigName,
+        node=BlockBranchConfig,
+    )

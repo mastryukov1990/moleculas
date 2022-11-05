@@ -3,7 +3,7 @@ from lib.graph_bert.layers.blocks.graph_transformer import GraphTransformerLayer
 from lib.graph_bert.layers.config.config_base import *
 
 
-@attr.s
+@dataclass
 class NetConfig(
     FullyConnectedConfig,
     GraphTransformerLayerConfig,

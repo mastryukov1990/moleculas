@@ -8,12 +8,23 @@ RUN apt-get install -y build-essential
 
 RUN apt-get install -y wget
 
+RUN pip install --upgrade pip
+
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+ENV PROJECT_ROOT /app
+
+RUN mkdir $PROJECT_ROOT
+
+RUN echo $PROJECT_ROOT
+
 COPY ./requirements.txt  $PROJECT_ROOT/
 
-RUN pip3 install -r requirements.txt
+COPY .  $PROJECT_ROOT/
+
+
+RUN pip3 install -r $PROJECT_ROOT/requirements.txt
 
 RUN pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
 

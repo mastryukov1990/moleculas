@@ -33,7 +33,7 @@ class MultiLevelFormatter(logging.Formatter):
 
 
 def configure_logger(
-    logger_name: str, logger_level=logging.INFO, log_dir: str = "/tmp"
+    logger_name: str, logger_level=logging.DEBUG, log_dir: str = "/tmp"
 ):
     logger = logging.getLogger(logger_name)
     if len(logger.handlers):
@@ -59,4 +59,7 @@ class Logger:
         self.logger = configure_logger(name)
 
     def info(self, text: str):
+        self.logger.debug(text)
+
+    def info_metrics(self, text: str):
         self.logger.info(text)

@@ -1,15 +1,19 @@
 from abc import ABCMeta, abstractmethod
 
+import hydra
 import torch
+from hydra.core.config_store import ConfigStore
+from omegaconf import OmegaConf
 from torch import nn
 
 from lib.graph_bert.layers.config.block_configs import ComposeInBlock
 from lib.graph_bert.layers.config.config_base import *
 
-LinearLayerConfigName = "linear_layer"
+LinearLayerConfigGroup = "linear_block"
+LinearLayerConfigName = "linear"
 
 
-@attr.s
+@dataclass
 class LinearLayerConfig(
     ComposeInBlock,
     BiasConfig,
@@ -19,7 +23,13 @@ class LinearLayerConfig(
     BatchNormConfig,
     CopyConfig,
 ):
-    pass
+    in_dim: int = 12
+    out_dim: int = 128
+    bias: bool = True
+    activation: bool = True
+    dropout: bool = True
+    layer_norm: bool = False
+    batch_norm: bool = True
 
 
 class LinearLayerBase(nn.Module):
@@ -90,3 +100,12 @@ class LinearWithLeakyReLU(LinearActivationNormalization):
 
 class LinearWithSoftMax(LinearActivationNormalization):
     ACTIVATION = nn.Softmax
+
+
+def register_configs() -> None:
+    cs = ConfigStore.instance()
+    cs.store(
+        group=LinearLayerConfigGroup,
+        name=LinearLayerConfigName,
+        node=LinearLayerConfig,
+    )

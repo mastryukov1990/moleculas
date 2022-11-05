@@ -1,6 +1,7 @@
 import abc
 import copy
 from abc import ABCMeta
+from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, List, Dict
 
@@ -21,9 +22,9 @@ MULTI_HEAD_ATTENTION_LAYER_SECTION = "multi_head_attention_layer"
 
 
 class Readout(str, Enum):
-    MAX = "max"
-    MEAN = "mean"
-    SUM = "sum"
+    max = "max"
+    mean = "mean"
+    sum = "sum"
 
 
 class Config:
@@ -65,121 +66,120 @@ class FromDictConfig:
         return cls(**fields)
 
 
-@attr.s
+@dataclass
 class HiddenDimConfig:
-    hidden_dim: int = attr.ib(default=256)
+    hidden_dim: int = 256
 
 
-@attr.s
+@dataclass
 class InDimConfig:
-    in_dim: int = attr.ib(default=128)
+    in_dim: int = 128
 
 
-@attr.s
+@dataclass
 class OutDimConfig:
-    out_dim: int = attr.ib(default=128)
+    out_dim: int = 128
 
 
-@attr.s
+@dataclass
 class DropoutConfig:
-    dropout: float = attr.ib(default=0.1)
+    dropout: float = 0.1
 
 
-@attr.s
+@dataclass
 class InFeatDropout:
-    in_feat_dropout: float = attr.ib(default=0.1)
+    in_feat_dropout: float = 0.1
 
 
-@attr.s
+@dataclass
 class NClassesConfig:
-    n_classes: int = attr.ib(default=2)
+    n_classes: int = 2
 
 
-@attr.s
+@dataclass
 class NumTransformsConfig:
-    num_transforms: int = attr.ib(default=10)
+    num_transforms: int = 10
 
 
-@attr.s
+@dataclass
 class NumHeadsConfig:
-    num_heads: int = attr.ib(default=4)
+    num_heads: int = 4
 
 
-@attr.s
+@dataclass
 class ReadOutConfig:
-    readout: Readout = attr.ib(default=Readout.MEAN)
+    readout: Readout = Readout.mean
 
 
-@attr.s
+@dataclass
 class LayerNormConfig:
-    layer_norm: bool = attr.ib(default=False)
+    layer_norm: bool = False
 
 
-@attr.s
-class BatchNormConfig:
-    batch_norm: int = attr.ib(default=True)
+class BatchNormConfig(abc.ABC):
+    batch_norm: bool = True
 
 
-@attr.s
+@dataclass
 class ResidualConfig:
-    residual: bool = attr.ib(default=True)
+    residual: bool = True
 
 
-@attr.s
+@dataclass
 class DeviceConfig:
-    device: str = attr.ib(default="cpu")
+    device: str = "cpu"
 
 
-@attr.s
+@dataclass
 class PosEncDimConfig:
-    pos_enc_dim: int = attr.ib(default=10)
+    pos_enc_dim: int = 10
 
 
-@attr.s
+@dataclass
 class MaxWlRoleIndexConfig:
-    max_wl_role_index: int = attr.ib(default=37)
+    max_wl_role_index: int = 37
 
 
-@attr.s
+@dataclass
 class BiasConfig:
-    bias: bool = attr.ib(default=True)
+    bias: bool = True
 
 
-@attr.s
+@dataclass
 class ActivationConfig:
-    activation: bool = attr.ib(default=True)
+    activation: bool = True
 
 
-@attr.s
+@dataclass
 class PreAddLayerConfig:
-    pre_add_layer: bool = attr.ib(default=True)
+    pre_add_layer: bool = True
 
 
-@attr.s
+@dataclass
 class PostAddLayerConfig:
-    post_add_layer: bool = attr.ib(default=True)
+    post_add_layer: bool = True
 
 
-@attr.s
+@dataclass
 class NumHiddenConfig:
-    num_hidden: int = attr.ib(default=10)
+    num_hidden: int = 10
 
 
-@attr.s
+@dataclass
 class PosEncDim:
-    pos_enc_dim: int = attr.ib(default=10)
+    pos_enc_dim: int = 10
 
 
-@attr.s
+@dataclass
 class MaxWlRoleIndex:
-    max_wl_role_index: int = attr.ib(default=37)
+    max_wl_role_index: int = 37
 
 
-@attr.s
+@dataclass
 class NumAtomType:
-    num_atom_type: int = attr.ib(default=100)
+    num_atom_type: int = 100
 
 
-@attr.s
+@dataclass
 class NumBondType:
-    num_bond_type: int = attr.ib(default=100)
+    num_bond_type: int = 100

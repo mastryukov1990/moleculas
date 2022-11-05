@@ -3,19 +3,21 @@ from typing import Dict, Any, Callable
 
 import dgl
 import torch
-from torch import nn
+from hydra.core.config_store import ConfigStore
 
 from lib.graph_bert.layers.config.config_base import Readout, ReadOutConfig
 
 LAST_NODE_FIELD = "h"
 
+ReadoutConfigName = "readout"
+ReadoutConfigGroup = "readout"
+
 
 class ReadOutBase:
-
     READOUT_METHODS: Dict[Readout, Callable[[dgl.DGLHeteroGraph, str], Any]] = {
-        Readout.SUM: dgl.sum_nodes,
-        Readout.MAX: dgl.max_nodes,
-        Readout.MEAN: dgl.mean_nodes,
+        Readout.sum: dgl.sum_nodes,
+        Readout.max: dgl.max_nodes,
+        Readout.mean: dgl.mean_nodes,
     }
     DEFAULT_METHOD: Callable[[dgl.DGLHeteroGraph, str], Any] = dgl.mean_nodes
 
@@ -30,5 +32,13 @@ class ReadOut(ReadOutBase):
     def agg_graph(self, g: dgl.DGLHeteroGraph, h: torch.Tensor) -> torch.Tensor:
         g.ndata[LAST_NODE_FIELD] = h
         method = self.READOUT_METHODS.get(self.config.readout, self.DEFAULT_METHOD)
-
         return method(g, LAST_NODE_FIELD)
+
+
+def register_configs() -> None:
+    cs = ConfigStore.instance()
+    cs.store(
+        group=ReadoutConfigGroup,
+        name=ReadoutConfigName,
+        node=ReadOutConfig,
+    )

@@ -1,0 +1,6 @@
+linear_layer: {}
+norm_layer:
+  in_dim: 128
+output_attention: {}
+readout:
+  readout: MEAN

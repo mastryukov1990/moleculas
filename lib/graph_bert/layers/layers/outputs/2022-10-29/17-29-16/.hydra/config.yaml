@@ -1,0 +1,20 @@
+linear_layer:
+  batch_norm: true
+  layer_norm: false
+  dropout: true
+  activation: true
+  bias: true
+  out_dim: 128
+  in_dim: 12
+norm_layer:
+  in_dim: 128
+output_attention:
+  batch_norm: true
+  layer_norm: false
+  dropout: true
+  activation: true
+  bias: true
+  out_dim: 128
+  in_dim: 12
+readout:
+  readout: MEAN

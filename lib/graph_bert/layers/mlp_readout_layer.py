@@ -16,7 +16,17 @@ from lib.graph_bert.layers.blocks.fully_connected import (
 
 
 class MLPConfig(FullyConnectedConfig):
-    pass
+    hidden_dim: int = 256
+
+    num_hidden: int = 10
+
+    in_dim: int = 12
+    out_dim: int = 128
+    bias: bool = True
+    activation: bool = True
+    dropout: bool = True
+    layer_norm: bool = False
+    batch_norm: bool = True
 
 
 class MLPBase(nn.Module):

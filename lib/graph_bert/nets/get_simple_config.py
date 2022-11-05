@@ -6,7 +6,7 @@ from lib.graph_bert.layers.config.config_base import ReadOutConfig
 from lib.graph_bert.layers.layers.norm import NormConfig
 from lib.graph_bert.layers.layers.o_layer import OutputAttentionLayerConfig
 from lib.graph_bert.layers.mlp_readout_layer import MLPConfig
-from lib.graph_bert.nets.transform_block import GraphBertConfig
+from lib.graph_bert.nets.transform_block import GraphBertTransformerConfig
 
 
 def get_bert_config_simple(
@@ -46,7 +46,7 @@ def get_bert_config_simple(
         post_batch_norm=post_batch_norm,
     )
 
-    return GraphBertConfig(
+    return GraphBertTransformerConfig(
         graph_transformer_layer_config=GraphTransformerLayerConfig(
             multy_head_attention_conf=multy_head_attention_conf,
             h_branch_config=h_branch_config,

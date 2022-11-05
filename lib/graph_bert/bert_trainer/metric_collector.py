@@ -16,6 +16,12 @@ class BatchMetric:
         self.num += num
         self.value = weight / self.num
 
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return str(self.__str__())
+
 
 class MetricCollector:
     def __init__(self):
@@ -29,7 +35,9 @@ class MetricCollector:
 
     def update_metrics(self):
         for k, v in self.batch_metrics.items():
-            self.metrics[k].append(v)
+            self.metrics[k].append(v.value)
+
+        self.batch_metrics = defaultdict(BatchMetric)
 
     def get_metrics(self) -> Dict[str, List]:
         return self.metrics
@@ -52,7 +60,7 @@ class MLMetricCollector:
     def update_test_collector(self):
         self.test_metric_collector.update_metrics()
 
-    def get_metrics(self) -> Dict[str, Dict[str:List]]:
+    def get_metrics(self) -> Dict[str, Dict[str, List]]:
         return {
             TEST_METRICS: self.test_metric_collector.get_metrics(),
             TRAIN_METRICS: self.train_metric_collector.get_metrics(),

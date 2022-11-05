@@ -1,6 +1,5 @@
-import abc
-
 import torch
+from hydra.core.config_store import ConfigStore
 from torch import nn
 
 from lib.graph_bert.layers.config.block_configs import ComposeInBlockTopologyBase
@@ -13,7 +12,11 @@ from lib.graph_bert.layers.layers.linear_layer import (
 )
 
 
-@attr.s
+FullyConnectedConfigGroup = "fully_connected_config_group"
+FullyConnectedConfigName = "fully_connected_config_name"
+
+
+@dataclass
 class FullyConnectedConfig(
     HiddenDimConfig,
     NumHiddenConfig,
@@ -25,19 +28,19 @@ class FullyConnectedConfig(
 
 class ComposeInBlockTopologyBaseFullyConnected(ComposeInBlockTopologyBase):
     def pre_config(self, config: FullyConnectedConfig) -> LinearLayerConfig:
-        config = config.get_copy()
+        config = copy.copy(config)
         config.in_dim = self.config_in_dim.in_dim
         config.out_dim = self.config_hidden_dim.hidden_dim
         return config
 
     def hidden_config(self, config: FullyConnectedConfig):
-        config = config.get_copy()
+        config = copy.copy(config)
         config.in_dim = self.config_hidden_dim.hidden_dim
         config.out_dim = self.config_hidden_dim.hidden_dim
         return config
 
     def post_config(self, config: FullyConnectedConfig):
-        config = config.get_copy()
+        config = copy.copy(config)
         config.in_dim = self.config_hidden_dim.hidden_dim
         config.out_dim = self.config_out_dim.out_dim
         return config
@@ -98,3 +101,12 @@ class FullyConnectedSoftMax(FullyConnectedBlock):
     MAIN_BLOCK = LinearWithLeakyReLU
     TAIL_BLOCK = LinearWithSoftMax
     COMPOSE_BLOCK_TOPOLOGY = ComposeInBlockTopologyBaseFullyConnected
+
+
+def register_configs() -> None:
+    cs = ConfigStore.instance()
+    cs.store(
+        group=FullyConnectedConfigGroup,
+        name=FullyConnectedConfigName,
+        node=FullyConnectedConfig,
+    )

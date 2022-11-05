@@ -1,13 +1,15 @@
-import abc
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 
 import torch
-from torch import nn
+from hydra.core.config_store import ConfigStore
 
 from lib.graph_bert.layers.layers.linear_layer import (
     LinearLayerInit,
     LinearLayerConfig,
 )
+
+ReadoutConfigGroup = "output_attention"
+OutputAttentionLayerConfigName = "output_attention"
 
 
 class OutputAttentionLayerConfig(LinearLayerConfig):
@@ -29,7 +31,6 @@ class OutputAttentionLayerBase(LinearLayerInit):
 
 class OutputAttentionLayer(OutputAttentionLayerBase):
     def concat(self, x: torch.Tensor) -> torch.Tensor:
-        l = x.shape
         x = x.view(-1, self.config.in_dim)
 
         return x
@@ -41,3 +42,12 @@ class OutputAttentionLayer(OutputAttentionLayerBase):
             x = self.dropout(x)
 
         return self.neuron_layer(x)
+
+
+def register_configs() -> None:
+    cs = ConfigStore.instance()
+    cs.store(
+        group=ReadoutConfigGroup,
+        name=OutputAttentionLayerConfigName,
+        node=OutputAttentionLayerConfig,
+    )

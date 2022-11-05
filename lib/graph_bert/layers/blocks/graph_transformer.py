@@ -4,6 +4,7 @@ from abc import ABCMeta
 import dgl
 import torch
 import torch.nn as nn
+from hydra.core.config_store import ConfigStore
 
 from lib.graph_bert.layers.attention_blocks.base import (
     MultiHeadAttentionLayerBase,
@@ -26,11 +27,17 @@ import attr
 logger = Logger(__name__)
 
 
-@attr.s
+GraphTransformerLayerConfigGroup = "graph_transform_layer_group"
+GraphTransformerLayerConfigName = "graph_transform_layer_name"
+
+
+@dataclass
 class GraphTransformerLayerConfig:
-    multy_head_attention_conf: MultiHeadAttentionLayerConfig = attr.ib()
-    h_branch_config: BranchFFNConfig = attr.ib()
-    e_branch_config: BranchFFNConfig = attr.ib()
+    multy_head_attention_conf: MultiHeadAttentionLayerConfig = (
+        MultiHeadAttentionLayerConfig()
+    )
+    h_branch_config: BranchFFNConfig = BranchFFNConfig()
+    e_branch_config: BranchFFNConfig = BranchFFNConfig()
 
 
 class GraphTransformerLayerBase(nn.Module, metaclass=ABCMeta):
@@ -84,3 +91,12 @@ class GraphTransformerLayerDefault(GraphTransformerLayer):
     H_BRANCH_FFN = BranchFFNAttentionDefault
     E_BRANCH_FFN = BranchFFNAttentionDefault
     MULTY_HEAD_ATTENTION_LAYER = MultiHeadAttentionLayerDefault
+
+
+def register_configs() -> None:
+    cs = ConfigStore.instance()
+    cs.store(
+        group=GraphTransformerLayerConfigGroup,
+        name=GraphTransformerLayerConfigName,
+        node=GraphTransformerLayerConfig,
+    )
