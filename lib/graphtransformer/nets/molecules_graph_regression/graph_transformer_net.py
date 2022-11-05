@@ -16,6 +16,7 @@ from lib.graphtransformer.layers.mlp_readout_layer import MLPReadout
 
 logger = Logger(__name__)
 
+
 class GraphTransformerNet(nn.Module):
     def __init__(self, net_params):
         super().__init__()

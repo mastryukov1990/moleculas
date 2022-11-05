@@ -1,0 +1,160 @@
+is_classifier_mask_config: true
+is_readout_config: true
+classifier_mask_config:
+  layer_norm: false
+  dropout: true
+  activation: true
+  bias: true
+  out_dim: 128
+  in_dim: 12
+  batch_norm: true
+  num_hidden: 10
+  hidden_dim: 256
+readout_config:
+  read_out_config:
+    readout: mean
+  mlp_layer_config:
+    layer_norm: false
+    dropout: true
+    activation: true
+    bias: true
+    out_dim: 128
+    in_dim: 12
+    batch_norm: true
+    num_hidden: 10
+    hidden_dim: 256
+transformer_block_config:
+  graph_transformer_layer_config:
+    multy_head_attention_conf:
+      bias: true
+      num_heads: 4
+      out_dim: 128
+      in_dim: 128
+    h_branch_config:
+      post_add_layer: true
+      pre_add_layer: true
+      fully_connected_config:
+        layer_norm: false
+        dropout: true
+        activation: true
+        bias: true
+        out_dim: 128
+        in_dim: 12
+        batch_norm: true
+        num_hidden: 10
+        hidden_dim: 256
+      output_attention_config:
+        layer_norm: false
+        dropout: true
+        activation: true
+        bias: true
+        out_dim: 128
+        in_dim: 12
+        batch_norm: true
+      pre_layer_norm:
+        in_dim: 128
+      pre_batch_norm:
+        in_dim: 128
+      post_layer_norm:
+        in_dim: 128
+      post_batch_norm:
+        in_dim: 128
+    e_branch_config:
+      post_add_layer: true
+      pre_add_layer: true
+      fully_connected_config:
+        layer_norm: false
+        dropout: true
+        activation: true
+        bias: true
+        out_dim: 128
+        in_dim: 12
+        batch_norm: true
+        num_hidden: 10
+        hidden_dim: 256
+      output_attention_config:
+        layer_norm: false
+        dropout: true
+        activation: true
+        bias: true
+        out_dim: 128
+        in_dim: 12
+        batch_norm: true
+      pre_layer_norm:
+        in_dim: 128
+      pre_batch_norm:
+        in_dim: 128
+      post_layer_norm:
+        in_dim: 128
+      post_batch_norm:
+        in_dim: 128
+  graph_transformer_layer_config_out:
+    multy_head_attention_conf:
+      bias: true
+      num_heads: 4
+      out_dim: 128
+      in_dim: 128
+    h_branch_config:
+      post_add_layer: true
+      pre_add_layer: true
+      fully_connected_config:
+        layer_norm: false
+        dropout: true
+        activation: true
+        bias: true
+        out_dim: 128
+        in_dim: 12
+        batch_norm: true
+        num_hidden: 10
+        hidden_dim: 256
+      output_attention_config:
+        layer_norm: false
+        dropout: true
+        activation: true
+        bias: true
+        out_dim: 128
+        in_dim: 12
+        batch_norm: true
+      pre_layer_norm:
+        in_dim: 128
+      pre_batch_norm:
+        in_dim: 128
+      post_layer_norm:
+        in_dim: 128
+      post_batch_norm:
+        in_dim: 128
+    e_branch_config:
+      post_add_layer: true
+      pre_add_layer: true
+      fully_connected_config:
+        layer_norm: false
+        dropout: true
+        activation: true
+        bias: true
+        out_dim: 128
+        in_dim: 12
+        batch_norm: true
+        num_hidden: 10
+        hidden_dim: 256
+      output_attention_config:
+        layer_norm: false
+        dropout: true
+        activation: true
+        bias: true
+        out_dim: 128
+        in_dim: 12
+        batch_norm: true
+      pre_layer_norm:
+        in_dim: 128
+      pre_batch_norm:
+        in_dim: 128
+      post_layer_norm:
+        in_dim: 128
+      post_batch_norm:
+        in_dim: 128
+  in_feat_dropout: 0.1
+  num_bond_type: 100
+  num_atom_type: 100
+  max_wl_role_index: 37
+  pos_enc_dim: 10
+  num_transforms: 10

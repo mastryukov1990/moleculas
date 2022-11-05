@@ -1,4 +1,4 @@
-FROM pure/python:3.8-cuda10.2-cudnn7-runtime
+FROM wallies/python-cuda:3.10-cuda11.6-runtime
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC
 # Install base utilities
@@ -8,12 +8,27 @@ RUN apt-get install -y build-essential
 
 RUN apt-get install -y wget
 
+RUN pip install --upgrade pip
+
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+ENV PROJECT_ROOT /app
+
+RUN mkdir $PROJECT_ROOT
+
+RUN echo $PROJECT_ROOT
+
 COPY ./requirements.txt  $PROJECT_ROOT/
 
-RUN pip3 install -r requirements.txt
+COPY .  $PROJECT_ROOT/
+
+
+RUN pip3 install -r $PROJECT_ROOT/requirements.txt
+
+RUN pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
+
+RUN pip3 install dgl-cu116 dglgo -f https://data.dgl.ai/wheels/repo.html
 
 RUN pip3 install jupyter jupyter_contrib_nbextensions
 
@@ -25,4 +40,4 @@ RUN jupyter contrib nbextension install --user && \
     jupyter nbextension enable freeze/main && \
     jupyter nbextension enable toc2/main && \
     jupyter nbextension enable  execute_time/ExecuteTime && \
-    python -m ipykernel.kernelspec
+    python3.10 -m ipykernel.kernelspec

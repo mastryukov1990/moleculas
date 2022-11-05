@@ -118,7 +118,9 @@ class MultiHeadAttentionLayer(nn.Module):
         K_h = self.K(h)
         V_h = self.V(h)
 
-        logger.info(f"[{__name__}] Q_H shape = {Q_h.shape},K_h shape = {K_h.shape},V_h shape = {V_h.shape}")
+        logger.info(
+            f"[{__name__}] Q_H shape = {Q_h.shape},K_h shape = {K_h.shape},V_h shape = {V_h.shape}"
+        )
         proj_e = self.proj_e(e)
 
         # Reshaping into [num_nodes, num_heads, feat_dim] to
@@ -213,17 +215,23 @@ class GraphTransformerLayer(nn.Module):
         e = self.O_e(e)
 
         if self.residual:
-            logger.info(f"[{__name__}] residual: h shape = {h.shape}, h_in1 ={h_in1.shape}")
+            logger.info(
+                f"[{__name__}] residual: h shape = {h.shape}, h_in1 ={h_in1.shape}"
+            )
             h = h_in1 + h  # residual connection
             e = e_in1 + e  # residual connection
 
         if self.layer_norm:
-            logger.info(f"[{__name__}] layer_norm: h shape = {h.shape}, layer_norm ={self.layer_norm1_h}")
+            logger.info(
+                f"[{__name__}] layer_norm: h shape = {h.shape}, layer_norm ={self.layer_norm1_h}"
+            )
             h = self.layer_norm1_h(h)
             e = self.layer_norm1_e(e)
 
         if self.batch_norm:
-            logger.info(f"[{__name__}] batch_norm: h shape = {h.shape}, batch_norms_shape ={self.batch_norm1_h}")
+            logger.info(
+                f"[{__name__}] batch_norm: h shape = {h.shape}, batch_norms_shape ={self.batch_norm1_h}"
+            )
             h = self.batch_norm1_h(h)
             e = self.batch_norm1_e(e)
 

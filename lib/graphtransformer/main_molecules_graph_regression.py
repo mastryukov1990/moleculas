@@ -16,6 +16,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+
 # from tensorboardX import SummaryWriter
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
@@ -105,7 +106,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
     root_log_dir, root_ckpt_dir, write_file_name, write_config_file = dirs
     device = net_params["device"]
 
-    # Write the network and optimization hyper-parameters in folder config/
+    # Write the network and optimization hyper-parameters in folder conf/
     with open(write_config_file + ".txt", "w") as f:
         f.write(
             """Dataset: {},\nModel: {}\n\nparams={}\n\nnet_params={}\n\n\nTotal Parameters: {}\n\n""".format(
@@ -190,7 +191,7 @@ def train_val_pipeline(MODEL_NAME, dataset, params, net_params, dirs):
                 writer.add_scalar("val/_loss", epoch_val_loss, epoch)
                 writer.add_scalar("train/_mae", epoch_train_mae, epoch)
                 writer.add_scalar("val/_mae", epoch_val_mae, epoch)
-                writer.add_scalar("test/_mae", epoch_test_mae, epoch)
+                writer.add_scalar("tests/_mae", epoch_test_mae, epoch)
                 writer.add_scalar(
                     "learning_rate", optimizer.param_groups[0]["lr"], epoch
                 )
@@ -283,8 +284,8 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--config",
-        help="Please give a config.json file with training/model/data/param details",
+        "--conf",
+        help="Please give a conf.json file with training/model/data/param details",
     )
     parser.add_argument("--gpu_id", help="Please give a value for gpu id")
     parser.add_argument("--model", help="Please give a value for model name")

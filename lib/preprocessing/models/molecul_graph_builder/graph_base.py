@@ -3,8 +3,8 @@ from typing import Dict
 
 from torch import Tensor
 
-from lib.preprocessing.models.atom.directory import AtomGlossary
-from lib.preprocessing.models.bonds.directory import BondGlossary
+from lib.preprocessing.models.atom.glossary import AtomGlossary
+from lib.preprocessing.models.bonds.glossary import BondGlossary
 
 
 class Graph:
